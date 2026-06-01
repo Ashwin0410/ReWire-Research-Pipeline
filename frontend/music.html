@@ -1038,8 +1038,8 @@
     <p class="q-text" style="margin-bottom:4px">Welcome to the ReWire Music Study</p>
     <p class="q-instruction">Chills (also called "aesthetic chills" or "frisson") are a physical sensation triggered by music or emotionally moving content. Not everyone experiences them, and that is completely normal.</p>
     <div class="consent-text">${CONSENT_TEXT}</div>
-    <div class="consent-check" onclick="state.consent=!state.consent;render()">
-      <input type="checkbox" ${state.consent ? "checked" : ""} onclick="event.stopPropagation();state.consent=!state.consent;render()"/> I have read and agree to the above.
+    <div class="consent-check" onclick="toggleConsent(event)">
+      <input type="checkbox" id="consent-cb" ${state.consent ? "checked" : ""}/> I have read and agree to the above.
     </div>
   </div>
   <div class="btn-wrap"><button class="btn-continue" ${state.consent ? "" : "disabled"} onclick="goConsent()">I Agree and Continue</button></div></div>`;
@@ -1336,6 +1336,15 @@
       }
 
       // ============ NAVIGATION ============
+
+      function toggleConsent(e) {
+        e.preventDefault();
+        state.consent = !state.consent;
+        const cb = document.getElementById("consent-cb");
+        if (cb) cb.checked = state.consent;
+        const btn = document.querySelector(".btn-continue");
+        if (btn) btn.disabled = !state.consent;
+      }
 
       function goConsent() {
         state.screen = "prolific";
