@@ -66,6 +66,9 @@ def health():
 
 @app.get("/")
 def serve_root():
+    path = FRONTEND_DIR / "index.html"
+    if path.exists():
+        return FileResponse(str(path), media_type="text/html")
     return {"service": "ReWire Research Pipeline", "endpoints": ["/music", "/speech", "/docs"]}
 
 

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>ReWire Research</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fafaf8;
+        --text: #2d2d2d;
+        --text-light: #9a9590;
+        --border: #e8e4df;
+        --font:
+          "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+        font-family: var(--font);
+        -webkit-font-smoothing: antialiased;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .brand {
+        font-size: 13px;
+        letter-spacing: 3px;
+        color: #c5c0ba;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 48px;
+      }
+      .title {
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      .subtitle {
+        font-size: 15px;
+        color: var(--text-light);
+        margin-bottom: 48px;
+        text-align: center;
+        font-weight: 400;
+      }
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+        max-width: 360px;
+      }
+      .btn {
+        display: block;
+        padding: 18px 24px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 14px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        letter-spacing: 0.01em;
+      }
+      .btn-primary {
+        background: var(--text);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+      .btn-secondary {
+        background: #fff;
+        color: var(--text);
+        border: 1.5px solid var(--border);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .btn-secondary:hover {
+        border-color: #ccc;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="brand">ReWire</div>
+      <p class="title">Music Chills Study</p>
+      <p class="subtitle">Select your study condition to begin.</p>
+      <div class="buttons">
+        <a href="/music" class="btn btn-primary">Music Only</a>
+        <a href="/speech" class="btn btn-secondary">Music + Speech</a>
+      </div>
+    </div>
+  </body>
+</html>
