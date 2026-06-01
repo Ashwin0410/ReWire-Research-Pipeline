@@ -14,7 +14,7 @@ class Config:
 
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
     ASSETS_DIR: Path = BASE_DIR / "assets"
-    OUT_DIR: str = os.getenv("OUT_DIR", "/data/audio")
+    OUT_DIR: str = os.getenv("OUT_DIR", "/tmp/audio")
 
     @property
     def out_dir_path(self) -> Path:
