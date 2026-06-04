@@ -18,6 +18,9 @@ class ResearchSession(Base):
     age = Column(String(10))
     gender = Column(String(50))
     ethnicity = Column(String(100))
+    depression_dx = Column(String(10))
+    medication = Column(String(10))
+    medication_text = Column(Text)
 
     # CTI-9
     cti9_responses_json = Column(Text)
@@ -61,11 +64,13 @@ class ResearchSession(Base):
     post_chills_intensity = Column(Float)
     post_chills_count = Column(Integer)
     post_goosebumps_yn = Column(String(5))
+    post_goosebumps_intensity = Column(Float)
     post_tears = Column(Float)
     post_moved_yn = Column(String(5))
 
     # Attribution (Section 7)
     post_attribution = Column(String(50))
+    post_attribution_other = Column(Text)
     post_trigger_moment = Column(Text)
 
     # Personalization check (Section 8)
