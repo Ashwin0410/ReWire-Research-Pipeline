@@ -42,6 +42,9 @@ class DemographicsRequest(BaseModel):
     age: str
     gender: str
     ethnicity: str
+    depression_dx: str = ""
+    medication: str = ""
+    medication_text: str = ""
 
 class CTI9Request(BaseModel):
     responses: List[int]
@@ -57,9 +60,9 @@ class SchemaRequest(BaseModel):
     dependence: List[int]
 
 class PersonalRequest(BaseModel):
-    q1_low_voice: str
-    q2_chills: str
-    q3_unseen: str
+    q1_low_voice: str = ""
+    q2_chills: str = ""
+    q3_unseen: str = ""
     q4_know: str = ""
 
 class ChillsRequest(BaseModel):
@@ -71,11 +74,13 @@ class PostOutcomeRequest(BaseModel):
     chills_intensity: float = 0
     chills_count: int = 0
     goosebumps_yn: str
+    goosebumps_intensity: float = 0
     tears: float = 0
-    moved_yn: str
+    moved_yn: str = ""
 
 class AttributionRequest(BaseModel):
     attribution: str
+    attribution_other: str = ""
     trigger_moment: str = ""
 
 class PersonalizationRequest(BaseModel):
@@ -103,7 +108,7 @@ class ExperienceRequest(BaseModel):
 
 class SafetyCloseRequest(BaseModel):
     feeling_now: str
-    distress_yn: str
+    distress_yn: str = ""
 
 class BetaRequest(BaseModel):
     beta_yn: str
@@ -166,7 +171,6 @@ def _run_generate(
     q1_low_voice: str,
     q2_chills: str,
     q3_unseen: str,
-    q4_know: str,
     dominant_schema: str,
     track_name: str,
 ):
@@ -185,7 +189,6 @@ def _run_generate(
             q1_low_voice=q1_low_voice,
             q2_chills=q2_chills,
             q3_unseen=q3_unseen,
-            q4_know=q4_know,
             dominant_schema=dominant_schema,
             target_words=target_words,
         )
@@ -269,6 +272,9 @@ def submit_demographics(session_id: str, req: DemographicsRequest, db: Session =
     session.age = req.age
     session.gender = req.gender
     session.ethnicity = req.ethnicity
+    session.depression_dx = req.depression_dx
+    session.medication = req.medication
+    session.medication_text = encrypt_field(req.medication_text)
     db.commit()
     return StatusResponse(status="ok")
 
@@ -339,7 +345,6 @@ def submit_personal(session_id: str, req: PersonalRequest, db: Session = Depends
             req.q1_low_voice,
             req.q2_chills,
             req.q3_unseen,
-            req.q4_know,
             session.dominant_schema or "",
             session.track_name,
         )
@@ -405,6 +410,7 @@ def submit_post_outcome(session_id: str, req: PostOutcomeRequest, db: Session = 
     session.post_chills_intensity = req.chills_intensity
     session.post_chills_count = req.chills_count
     session.post_goosebumps_yn = req.goosebumps_yn
+    session.post_goosebumps_intensity = req.goosebumps_intensity
     session.post_tears = req.tears
     session.post_moved_yn = req.moved_yn
     db.commit()
@@ -415,6 +421,7 @@ def submit_post_outcome(session_id: str, req: PostOutcomeRequest, db: Session = 
 def submit_attribution(session_id: str, req: AttributionRequest, db: Session = Depends(get_db)):
     session = _get_session(session_id, db)
     session.post_attribution = req.attribution
+    session.post_attribution_other = encrypt_field(req.attribution_other)
     session.post_trigger_moment = encrypt_field(req.trigger_moment)
     db.commit()
     return StatusResponse(status="ok")
@@ -475,7 +482,7 @@ def submit_safety_close(session_id: str, req: SafetyCloseRequest, db: Session = 
     session = _get_session(session_id, db)
     session.post_feeling_now = encrypt_field(req.feeling_now)
     session.post_distress_yn = req.distress_yn
-    if req.distress_yn.lower() == "yes":
+    if req.distress_yn and req.distress_yn.lower() == "yes":
         session.distress_flagged = True
     db.commit()
     return StatusResponse(status="ok")
@@ -517,6 +524,9 @@ def export_csv(db: Session = Depends(get_db)):
         "age",
         "gender",
         "ethnicity",
+        "depression_dx",
+        "medication",
+        "medication_text",
         "cti9_responses",
         "cti9_total",
         "cti9_classification",
@@ -543,9 +553,11 @@ def export_csv(db: Session = Depends(get_db)):
         "post_chills_intensity",
         "post_chills_count",
         "post_goosebumps_yn",
+        "post_goosebumps_intensity",
         "post_tears",
         "post_moved_yn",
         "post_attribution",
+        "post_attribution_other",
         "post_trigger_moment",
         "post_what_came_to_mind",
         "post_words_personal",
@@ -579,6 +591,9 @@ def export_csv(db: Session = Depends(get_db)):
             s.age,
             s.gender,
             s.ethnicity,
+            s.depression_dx,
+            s.medication,
+            decrypt_field(s.medication_text),
             s.cti9_responses_json,
             s.cti9_total,
             s.cti9_classification,
@@ -605,9 +620,11 @@ def export_csv(db: Session = Depends(get_db)):
             s.post_chills_intensity,
             s.post_chills_count,
             s.post_goosebumps_yn,
+            s.post_goosebumps_intensity,
             s.post_tears,
             s.post_moved_yn,
             s.post_attribution,
+            decrypt_field(s.post_attribution_other),
             decrypt_field(s.post_trigger_moment),
             decrypt_field(s.post_what_came_to_mind),
             s.post_words_personal,
