@@ -462,6 +462,10 @@ function buildScale(cfg){
     (function(val){ sp.addEventListener("click", function(){ setVal(val); }); })(cfg.min+i);
     labelRow.appendChild(sp); labelSpans.push(sp);
   }
+  /* tighter labels for scales with 6+ verbal options (e.g. schema) */
+  if(verbal && n >= 6){
+    labelSpans.forEach(function(s){ s.style.maxWidth = "80px"; s.style.fontSize = "11.5px"; });
+  }
   tw.appendChild(labelRow);
 
   var track = document.createElement("div"); track.className = "scale-track"; track.tabIndex = 0;
@@ -908,7 +912,6 @@ function startMeditation(){
   meditationAudio.play().catch(function(){});
   meditationAudio.onended=function(){
     stopParticles();
-    document.getElementById("meditationScreen").classList.remove("active");
     startStimulus();
   };
 }
@@ -921,6 +924,7 @@ async function startStimulus(){
   }
   if(!audioUrl){ alert("Audio not ready. Please contact the researcher."); return; }
 
+  document.getElementById("meditationScreen").classList.remove("active");
   document.getElementById("stimulusScreen").classList.add("active");
   initParticles("stimCanvas");
 
