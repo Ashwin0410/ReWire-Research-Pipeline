@@ -1033,7 +1033,6 @@ async function startStimulus(){
   stimulusAudio.play().catch(function(){});
   stimulusAudio.onended=function(){
     stopParticles();
-    document.getElementById("stimulusScreen").classList.remove("active");
     submitChillsAndContinue();
   };
 }
@@ -1043,6 +1042,7 @@ async function submitChillsAndContinue(){
     chills_timestamps_json: JSON.stringify(chillsTimestamps),
     chills_count: chillsCountVal
   });
+  document.getElementById("stimulusScreen").classList.remove("active");
   footer.style.display="flex";
   show(ORDER.indexOf("state_post"));
 }
