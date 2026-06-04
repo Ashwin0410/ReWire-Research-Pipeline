@@ -1,1676 +1,1049 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
-    />
-    <title>ReWire Research</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #fafaf8;
-        --bg-pure: #ffffff;
-        --text: #2d2d2d;
-        --text-light: #9a9590;
-        --accent: #4f6ef7;
-        --accent-soft: rgba(79, 110, 247, 0.08);
-        --pill-bg: #ffffff;
-        --pill-selected: #2d2d2d;
-        --pill-selected-text: #ffffff;
-        --btn-bg: #2d2d2d;
-        --btn-text: #ffffff;
-        --btn-disabled: #ddd8d3;
-        --border: #e8e4df;
-        --border-focus: #4f6ef7;
-        --warm: #f7f5f0;
-        --dark: #0c0c0e;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-        --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-        --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.06);
-        --radius: 14px;
-        --font:
-          "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        -webkit-tap-highlight-color: transparent;
-      }
-      html,
-      body {
-        height: 100%;
-        font-family: var(--font);
-        -webkit-font-smoothing: antialiased;
-        background: var(--bg);
-        color: var(--text);
-      }
-      #app {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        transition: background-color 0.8s ease;
-      }
-      .progress-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: rgba(0, 0, 0, 0.04);
-        z-index: 100;
-      }
-      .progress-fill {
-        height: 100%;
-        background: var(--accent);
-        border-radius: 0 2px 2px 0;
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .brand {
-        text-align: center;
-        padding: 18px 0 10px;
-        font-size: 12px;
-        letter-spacing: 3px;
-        color: #c5c0ba;
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-      .screen {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        max-width: 620px;
-        width: 100%;
-        margin: 0 auto;
-        padding: 0 28px;
-        overflow-y: auto;
-      }
-      .screen.entering {
-        opacity: 0;
-        transform: translateY(10px);
-        animation: screenIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      }
-      @keyframes screenIn {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .screen-scroll {
-        flex: 1;
-        padding-bottom: 100px;
-      }
-      .q-text {
-        font-size: 21px;
-        font-weight: 600;
-        line-height: 1.5;
-        margin-bottom: 8px;
-        color: var(--text);
-        letter-spacing: -0.01em;
-      }
-      .q-text.large {
-        font-size: 27px;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-      }
-      .q-instruction {
-        font-size: 14px;
-        color: var(--text-light);
-        line-height: 1.6;
-        margin-bottom: 20px;
-        font-weight: 400;
-      }
-      .btn-wrap {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 16px 28px;
-        padding-bottom: max(16px, env(safe-area-inset-bottom));
-        display: flex;
-        justify-content: center;
-        background: linear-gradient(transparent, var(--bg) 40%);
-        z-index: 50;
-      }
-      .btn-wrap.dark-bg {
-        background: linear-gradient(transparent, var(--dark) 40%);
-      }
-      .btn-wrap.warm-bg {
-        background: linear-gradient(transparent, var(--warm) 40%);
-      }
-      .btn-continue {
-        width: 100%;
-        max-width: 620px;
-        padding: 16px;
-        background: var(--btn-bg);
-        color: var(--btn-text);
-        border: none;
-        border-radius: var(--radius);
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        letter-spacing: 0.01em;
-        box-shadow: var(--shadow-md);
-      }
-      .btn-continue:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-      .btn-continue:active {
-        transform: scale(0.98) translateY(0);
-        box-shadow: var(--shadow-sm);
-      }
-      .btn-continue:disabled {
-        background: var(--btn-disabled);
-        color: #aaa;
-        cursor: default;
-        transform: none;
-        box-shadow: none;
-      }
-      .pill-group {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .pill {
-        flex: 1;
-        min-width: 48px;
-        padding: 10px 6px;
-        text-align: center;
-        font-size: 13px;
-        font-weight: 500;
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        background: var(--pill-bg);
-        color: var(--text);
-        user-select: none;
-        box-shadow: var(--shadow-sm);
-      }
-      .pill:hover {
-        border-color: #ccc;
-        box-shadow: var(--shadow-md);
-      }
-      .pill:active {
-        transform: scale(1.04);
-      }
-      .pill.selected {
-        background: var(--pill-selected);
-        color: var(--pill-selected-text);
-        border-color: var(--pill-selected);
-        box-shadow: 0 2px 8px rgba(45, 45, 45, 0.2);
-        transform: scale(1.02);
-      }
-      .slider-wrap {
-        margin-bottom: 28px;
-      }
-      .slider-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        color: var(--text-light);
-        margin-bottom: 6px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-      }
-      .slider-value {
-        text-align: center;
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--accent);
-        margin-bottom: 10px;
-        letter-spacing: -0.02em;
-      }
-      input[type="range"] {
-        width: 100%;
-        height: 8px;
-        -webkit-appearance: none;
-        appearance: none;
-        background: linear-gradient(90deg, var(--accent-soft) 0%, #e8e4df 100%);
-        border-radius: 4px;
-        outline: none;
-        transition: background 0.3s;
-      }
-      input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 28px;
-        height: 28px;
-        background: var(--accent);
-        border-radius: 50%;
-        cursor: pointer;
-        border: 4px solid white;
-        box-shadow: 0 2px 8px rgba(79, 110, 247, 0.3);
-        transition: all 0.2s;
-      }
-      input[type="range"]::-webkit-slider-thumb:hover {
-        transform: scale(1.15);
-        box-shadow: 0 3px 12px rgba(79, 110, 247, 0.4);
-      }
-      input[type="range"]::-webkit-slider-thumb:active {
-        transform: scale(0.95);
-      }
-      input[type="range"]::-moz-range-thumb {
-        width: 28px;
-        height: 28px;
-        background: var(--accent);
-        border-radius: 50%;
-        cursor: pointer;
-        border: 4px solid white;
-        box-shadow: 0 2px 8px rgba(79, 110, 247, 0.3);
-      }
-      .yn-group {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-      .yn-btn {
-        flex: 1;
-        padding: 14px;
-        text-align: center;
-        font-size: 15px;
-        font-weight: 600;
-        border: 1.5px solid var(--border);
-        border-radius: var(--radius);
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        background: var(--bg-pure);
-        color: var(--text);
-        user-select: none;
-        box-shadow: var(--shadow-sm);
-      }
-      .yn-btn:hover {
-        border-color: #ccc;
-        box-shadow: var(--shadow-md);
-      }
-      .yn-btn:active {
-        transform: scale(1.02);
-      }
-      .yn-btn.selected {
-        background: var(--pill-selected);
-        color: white;
-        border-color: var(--pill-selected);
-        box-shadow: 0 2px 8px rgba(45, 45, 45, 0.2);
-      }
-      .ms-option {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        margin-bottom: 8px;
-        border: 1.5px solid var(--border);
-        border-radius: var(--radius);
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        user-select: none;
-        background: var(--bg-pure);
-        box-shadow: var(--shadow-sm);
-      }
-      .ms-option:hover {
-        border-color: #ccc;
-        box-shadow: var(--shadow-md);
-      }
-      .ms-option.selected {
-        border-color: var(--pill-selected);
-        background: #f8f6f3;
-        box-shadow: var(--shadow-md);
-      }
-      .ms-check {
-        width: 22px;
-        height: 22px;
-        border: 2px solid var(--border);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.25s;
-        flex-shrink: 0;
-      }
-      .ms-option.selected .ms-check {
-        background: var(--pill-selected);
-        border-color: var(--pill-selected);
-      }
-      .ms-option.selected .ms-check::after {
-        content: "";
-        width: 6px;
-        height: 10px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-        margin-top: -2px;
-      }
-      textarea {
-        width: 100%;
-        padding: 16px;
-        font-size: 15px;
-        border: none;
-        border-radius: var(--radius);
-        resize: vertical;
-        min-height: 110px;
-        font-family: var(--font);
-        transition: box-shadow 0.3s;
-        outline: none;
-        background: var(--bg-pure);
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 1.5px var(--border);
-      }
-      textarea:focus {
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 2px var(--border-focus);
-      }
-      input[type="text"],
-      input[type="email"] {
-        width: 100%;
-        padding: 16px;
-        font-size: 15px;
-        border: none;
-        border-radius: var(--radius);
-        font-family: var(--font);
-        outline: none;
-        transition: box-shadow 0.3s;
-        background: var(--bg-pure);
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 1.5px var(--border);
-      }
-      input[type="text"]:focus,
-      input[type="email"]:focus {
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 2px var(--border-focus);
-      }
-      input[type="number"] {
-        width: 100%;
-        padding: 16px;
-        font-size: 15px;
-        border: none;
-        border-radius: var(--radius);
-        font-family: var(--font);
-        outline: none;
-        transition: box-shadow 0.3s;
-        background: var(--bg-pure);
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 1.5px var(--border);
-        -moz-appearance: textfield;
-      }
-      input[type="number"]:focus {
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 2px var(--border-focus);
-      }
-      input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-      }
-      .consent-text {
-        font-size: 14px;
-        line-height: 1.7;
-        color: #555;
-        max-height: 55vh;
-        overflow-y: auto;
-        padding: 20px;
-        border: none;
-        border-radius: var(--radius);
-        margin-bottom: 16px;
-        background: var(--bg-pure);
-        box-shadow:
-          var(--shadow-inset),
-          0 0 0 1px var(--border);
-      }
-      .consent-check {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        font-size: 15px;
-        cursor: pointer;
-        user-select: none;
-        font-weight: 500;
-      }
-      .consent-check input {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        accent-color: var(--accent);
-      }
-      .interstitial {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        font-size: 22px;
-        color: var(--text-light);
-        font-weight: 300;
-        letter-spacing: 0.5px;
-        opacity: 0;
-        animation: fadeText 2.5s ease forwards;
-      }
-      @keyframes fadeText {
-        0% {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        30% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        80% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-      .canvas-screen {
-        position: fixed;
-        inset: 0;
-        padding: 0;
-        background: #000;
-        z-index: 200;
-      }
-      .canvas-screen canvas {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-      }
-      .canvas-tap-area {
-        position: absolute;
-        inset: 0;
-        z-index: 3;
-        cursor: crosshair;
-      }
-      .canvas-hud {
-        position: absolute;
-        inset: 0;
-        z-index: 5;
-        pointer-events: none;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 24px 24px 24px;
-      }
-      .canvas-hud-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .canvas-hud-bottom {
-        text-align: center;
-        padding-bottom: 8px;
-      }
-      .chills-counter {
-        font-size: 11px;
-        font-weight: 300;
-        letter-spacing: 0.1em;
-        color: rgba(255, 255, 255, 0.7);
-      }
-      .canvas-hint {
-        font-size: 13px;
-        font-weight: 300;
-        color: rgba(255, 255, 255, 0.3);
-        letter-spacing: 0.02em;
-        transition: opacity 1.5s;
-      }
-      .wait-overlay {
-        position: absolute;
-        inset: 0;
-        z-index: 10;
-        background: rgba(0, 0, 0, 0.85);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
-        color: #fff;
-      }
-      .wait-progress-bar {
-        width: 200px;
-        height: 3px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-        overflow: hidden;
-      }
-      .wait-progress-fill {
-        height: 100%;
-        background: #ffd86b;
-        border-radius: 2px;
-        transition: width 0.8s ease;
-      }
-      .wait-label {
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.5);
-        font-weight: 400;
-      }
-      .domain-label {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 2.5px;
-        color: var(--text-light);
-        margin: 28px 0 14px;
-        font-weight: 600;
-      }
-      .domain-label:first-child {
-        margin-top: 0;
-      }
-      .item-group {
-        margin-bottom: 22px;
-      }
-      .copy-box {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 18px;
-        background: var(--bg-pure);
-        border-radius: var(--radius);
-        margin: 16px 0;
-        cursor: pointer;
-        box-shadow: var(--shadow-md);
-        transition: all 0.2s;
-      }
-      .copy-box:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      }
-      .copy-box code {
-        flex: 1;
-        font-size: 18px;
-        font-weight: 700;
-        font-family: "SF Mono", monospace;
-        letter-spacing: 3px;
-      }
-      .copy-box .copy-label {
-        font-size: 13px;
-        color: var(--accent);
-        font-weight: 600;
-      }
-      .support-box {
-        padding: 20px;
-        background: #fffbf5;
-        border: 1px solid #f0d8b0;
-        border-radius: var(--radius);
-        margin: 16px 0;
-        line-height: 1.6;
-      }
-      .support-box strong {
-        display: block;
-        margin-bottom: 8px;
-      }
-      .attr-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .attr-btn {
-        padding: 14px 16px;
-        text-align: left;
-        font-size: 15px;
-        font-weight: 500;
-        border: 1.5px solid var(--border);
-        border-radius: var(--radius);
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        background: var(--bg-pure);
-        color: var(--text);
-        user-select: none;
-        box-shadow: var(--shadow-sm);
-      }
-      .attr-btn:hover {
-        border-color: #ccc;
-        box-shadow: var(--shadow-md);
-      }
-      .attr-btn:active {
-        transform: scale(1.02);
-      }
-      .attr-btn.selected {
-        background: var(--pill-selected);
-        color: white;
-        border-color: var(--pill-selected);
-        box-shadow: 0 2px 8px rgba(45, 45, 45, 0.2);
-      }
-      .flag-box {
-        padding: 16px;
-        background: #fffaf5;
-        border: 1px solid #f0d0b0;
-        border-radius: var(--radius);
-        margin: 12px 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script>
-      const ARM = "music_speech";
-      const API = "/api/research";
-      const PROLIFIC_CODE = "REWIRE2026";
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Music Chills Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;450;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4f2ec; --card:#ffffff; --ink:#26241f; --ink-soft:#56524a;
+    --muted:#928c80; --line:#e4e0d6; --line-strong:#cfc9bb;
+    --accent:#4f5bd5; --accent-soft:#eceefb; --dark:#2b2a27; --dark-hover:#1c1b19;
+    --radius:14px; --radius-sm:10px; --maxw:720px;
+    --sans:"Inter", system-ui, sans-serif; --display:"Inter Tight", system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  #progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--accent);transition:width .35s ease;z-index:50;}
+  .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:72px 28px 150px;}
+  .screen{width:100%;max-width:var(--maxw);display:none;animation:fade .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
-      const CTI9_ITEMS = [
-        {
-          text: "When I read poetry or look at art, I sometimes feel a chill or wave of excitement.",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "Sometimes I feel as if my mind could envelop the whole world.",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "Sometimes I experience things as if they were doubly real.",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "Textures (wool, sand, wood) sometimes remind me of colors or music.",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "Sometimes I'm so immersed in nature or art that my state of consciousness feels temporarily changed.",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "When I listen to powerful music, I sometimes feel as if I'm being lifted into the air.",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "I'm often delighted by small things (colors in soap bubbles, the star shape inside a cut apple).",
-          labels: ["Never", "Rarely", "Occasionally", "Often", "Very often"],
-        },
-        {
-          text: "How often do you feel moved or touched?",
-          labels: ["1", "2", "3", "4", "5", "6", "7", "8"],
-        },
-        {
-          text: "Right now, how do you feel?",
-          labels: [
-            "Very sad",
-            "Somewhat sad",
-            "Neutral",
-            "Somewhat happy",
-            "Very happy",
-          ],
-        },
-      ];
+  h1{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.25;letter-spacing:-.01em;margin:0 0 16px;}
+  h2{font-family:var(--display);font-weight:600;font-size:22px;line-height:1.3;margin:0 0 22px;}
+  p{margin:0 0 16px;color:var(--ink-soft);}
+  a.inline{color:var(--accent);text-decoration:underline;text-underline-offset:2px;}
+  .small{font-size:14px;color:var(--muted);}
+  .q-index{font-size:13px;color:var(--muted);margin:0 0 26px;letter-spacing:.02em;}
+  .consent-line{font-size:15px;color:var(--ink-soft);margin-top:6px;}
+  .check-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer;user-select:none;margin-top:18px;}
+  .check-row input{margin-top:3px;width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex:none;}
+  .check-row span{font-size:15px;color:var(--ink-soft);}
 
-      const SCHEMA_ITEMS = {
-        failure: [
-          "Almost nothing I do at work (or school) is as good as other people can do.",
-          "I'm incompetent when it comes to achievement.",
-          "Most other people are more capable than I am in areas of work and achievement.",
-          "I'm not as talented as most people are at their work.",
-          "I'm not as intelligent as most people when it comes to work (or school).",
-        ],
-        defectiveness: [
-          "No man/woman I desire could love me once he/she saw my defects or flaws.",
-          "No one I desire would want to stay close to me if he/she knew the real me.",
-          "I'm unworthy of the love, attention, and respect of others.",
-          "I feel that I'm not lovable.",
-          "I am too unacceptable in very basic ways to reveal myself to other people.",
-        ],
-        dependence: [
-          "I do not feel capable of getting by on my own in everyday life.",
-          "I think of myself as a dependent person, when it comes to everyday functioning.",
-          "I lack common sense.",
-          "My judgment cannot be relied upon in everyday situations.",
-          "I don't feel confident about my ability to solve everyday problems that come up.",
-        ],
-      };
-      const SCHEMA_LABELS = [
-        "Completely\nuntrue",
-        "Mostly\nuntrue",
-        "Slightly more\ntrue than untrue",
-        "Moderately\ntrue",
-        "Mostly\ntrue",
-        "Describes me\nperfectly",
-      ];
+  .footer{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:18px 28px 24px;background:linear-gradient(to top,var(--paper) 62%,rgba(244,242,236,0));z-index:40;}
+  .btn{font-family:var(--display);font-weight:600;font-size:16px;width:100%;max-width:var(--maxw);background:var(--dark);color:#fff;border:none;padding:16px 24px;border-radius:var(--radius);cursor:pointer;transition:background .18s ease,opacity .18s ease;}
+  .btn:hover:not(:disabled){background:var(--dark-hover);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
 
-      const PERSONAL_QS = [
-        {
-          key: "q1_low_voice",
-          text: "What does the voice in your head say when you're at your lowest?",
-          placeholder: "Write what it says...",
-        },
-        {
-          key: "q2_chills",
-          text: "When was the last time something hit you so hard you got chills or goosebumps and had to stop for a second?",
-          placeholder: "Describe the moment...",
-        },
-        {
-          key: "q3_unseen",
-          text: "What's something true about you that nobody sees?",
-          placeholder: "Something only you know...",
-        },
-        {
-          key: "q4_know",
-          text: 'Finish this sentence: "I just want someone to know that..."',
-          placeholder: "Complete the sentence...",
-        },
-      ];
+  .text-input{width:100%;background:var(--card);border:1px solid var(--line-strong);border-radius:var(--radius);padding:15px 18px;font-family:var(--sans);font-size:17px;color:var(--ink);transition:border-color .15s ease,box-shadow .15s ease;}
+  .text-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  textarea.text-input{min-height:170px;resize:vertical;line-height:1.55;}
 
-      const DIAG_OPTIONS = [
-        "The words felt too generic",
-        "Music didn't resonate with me",
-        "Wasn't in the right headspace",
-        "Audio quality or setup",
-        "Voice was too loud",
-        "Nothing felt off",
-        "Other",
-      ];
-      const WORDS_PERSONAL_LABELS = [
-        "Not at all",
-        "A little",
-        "Somewhat",
-        "Mostly",
-        "Completely",
-      ];
+  .field{margin-bottom:34px;}
+  .field-label{display:block;font-family:var(--display);font-weight:600;font-size:19px;line-height:1.35;margin-bottom:14px;color:var(--ink);}
+  .field-label .opt-tag{font-family:var(--sans);font-weight:400;font-size:14px;color:var(--muted);}
+  .card-grid{display:grid;gap:12px;}
+  .card-grid.cols-2{grid-template-columns:1fr 1fr;}
+  .opt{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:15px 18px;text-align:center;cursor:pointer;font-size:16px;color:var(--ink);transition:border-color .15s ease,background .15s ease,color .15s ease;user-select:none;}
+  .opt:hover{border-color:var(--accent);}
+  .opt.selected{background:var(--dark);border-color:var(--dark);color:#fff;}
+  .opt.multi.selected{background:var(--accent);border-color:var(--accent);}
 
-      const CONSENT_TEXT = `<strong>What this study is.</strong> You'll listen to a short audio piece that combines music with spoken words, and answer questions about how it made you feel, including whether you experienced chills, goosebumps, or emotional responses. Some questions ask about your moods, your inner thoughts, and personal experiences. There are no right or wrong answers, and you can skip any question you don't want to answer.<br><br><strong>Who can take part.</strong> You must be 18 or older and located in the United States.<br><br><strong>How we use your responses.</strong> This is a commercial research study run by ReWire Neurotechnologies, Inc. Your responses, including written answers and your reactions to the audio, will be used to develop, test, and improve our products, including the AI systems that generate personalized audio. We may retain and reuse your responses for these purposes over time.<br><br><strong>Personal information.</strong> We collect your Prolific ID to manage participation and compensation, and we remove it before using your data for product development.<br><br><strong>Storage and security.</strong> Your responses are stored securely and accessed only by ReWire and people working on its behalf. They may be shared with research or commercial partners only in de-identified or aggregated form.<br><br><strong>Withdrawal.</strong> Taking part is voluntary, and you can stop at any time. This study is not therapy, not medical treatment, and not a substitute for professional care. If you feel distressed, you can stop immediately, and resources will be provided at the end. If you are in crisis, contact the 988 Suicide & Crisis Lifeline (call or text 988).<br><br><strong>Contact.</strong> Questions about this study: felix@rewire.bio`;
+  .scale-item{margin-bottom:46px;}
+  .scale-q{font-family:var(--display);font-weight:600;font-size:20px;line-height:1.35;margin:0 0 30px;color:var(--ink);}
+  .scale{padding:0 6px;}
+  .scale-track-wrap{position:relative;padding:8px 12px;}
+  .scale-labels{position:relative;}
+  .scale-labels span{position:absolute;bottom:0;font-size:13.5px;color:var(--muted);line-height:1.25;max-width:118px;cursor:pointer;transition:color .12s ease;}
+  .scale-labels span.sel{color:var(--accent);font-weight:700;}
+  .scale-track{position:relative;height:42px;display:flex;align-items:center;cursor:pointer;touch-action:none;}
+  .scale-line{position:absolute;left:0;right:0;height:4px;border-radius:2px;background:var(--line-strong);}
+  .scale-fill{position:absolute;left:0;height:4px;border-radius:2px;background:var(--accent);width:0;opacity:0;transition:width .12s ease;}
+  .scale.answered .scale-fill{opacity:1;}
+  .ticks{position:absolute;left:0;right:0;display:flex;justify-content:space-between;align-items:center;pointer-events:none;}
+  .tick{width:10px;height:10px;border-radius:50%;background:var(--line-strong);transition:background .12s ease;}
+  .scale.answered .tick.passed{background:var(--accent);}
+  .thumb{position:absolute;top:50%;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--accent);transform:translate(-50%,-50%) scale(0);transition:left .12s ease,transform .15s ease;box-shadow:0 2px 8px rgba(0,0,0,.12);pointer-events:none;}
+  .scale.answered .thumb{transform:translate(-50%,-50%) scale(1);}
+  .bubble{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);font-family:var(--display);font-weight:700;color:var(--accent);white-space:nowrap;font-size:24px;line-height:1;opacity:0;transition:opacity .15s ease;}
+  .scale.answered .bubble{opacity:1;}
+  .bubble.word{font-size:17px;font-weight:600;white-space:normal;max-width:150px;text-align:center;line-height:1.2;}
+  .anchors{display:flex;justify-content:space-between;margin-top:14px;gap:16px;}
+  .anchors span{font-size:15px;color:var(--ink-soft);font-weight:500;}
+  .anchors span:last-child{text-align:right;}
+  .vlabels{display:flex;justify-content:space-between;margin-top:14px;gap:6px;}
+  .vlabels span{flex:1;text-align:center;font-size:13px;color:var(--muted);line-height:1.3;transition:color .12s ease,font-weight .12s ease;}
+  .vlabels span.sel{color:var(--ink);font-weight:600;}
 
-      const SCREENS = [
-        "consent",
-        "prolific",
-        "demographics",
-        "cti9",
-        "preState",
-        "schema",
-        "interstitial-prepare",
-        "personal",
-        "headphones",
-        "interstitial-moment",
-        "primer",
-        "interstitial-listen",
-        "stimulus",
-        "interstitial-back",
-        "postOutcome",
-        "attribution",
-        "personalization",
-        "safety",
-        "diagnostics",
-        "postState",
-        "experience",
-        "safetyClose",
-        "beta",
-        "complete",
-      ];
+  .section-intro{font-size:15px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:34px;font-style:italic;}
 
-      const state = {
-        screen: "consent",
-        sessionId: null,
-        consent: false,
-        prolificId: "",
-        arm: ARM,
-        age: "",
-        gender: "",
-        ethnicity: "",
-        cti9: Array(9).fill(null),
-        preArousal: 5,
-        preValence: 5,
-        preAbsorption: 5,
-        schema: {
-          failure: Array(5).fill(null),
-          defectiveness: Array(5).fill(null),
-          dependence: Array(5).fill(null),
-        },
-        personalIndex: 0,
-        personal: {
-          q1_low_voice: "",
-          q2_chills: "",
-          q3_unseen: "",
-          q4_know: "",
-        },
-        meditationUrl: null,
-        audioUrl: null,
-        meditationDone: false,
-        genDone: false,
-        genProgress: 0,
-        chillsTimestamps: [],
-        chillsCount: 0,
-        postChillsYn: null,
-        postIntensity: 0,
-        postChillsCount: 0,
-        postGoosebumpsYn: null,
-        postTears: 0,
-        postMovedYn: null,
-        postAttribution: null,
-        postTriggerMoment: "",
-        postWhatCameToMind: "",
-        postWordsPersonal: null,
-        postWordsUntrueYn: null,
-        postWordsUntrueText: "",
-        postWordsUpsetYn: null,
-        postWordsUpsetText: "",
-        diagSelected: [],
-        diagOther: "",
-        postArousal: 5,
-        postValence: 5,
-        postAbsorption: 5,
-        postExperience: "",
-        postExperienceMore: "",
-        postFeelingNow: "",
-        postDistressYn: null,
-        betaYn: null,
-        betaEmail: "",
-      };
+  .center-screen{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:60px;}
+  .icon{color:var(--muted);margin-bottom:26px;}
+  .center-screen h1{text-align:center;}
+  .center-screen p{max-width:480px;text-align:center;}
 
-      let primerAudio = null,
-        stimulusAudio = null;
-      let primerInterval = null,
-        stimulusInterval = null;
-      let particleCanvas = null,
-        particleCtx = null,
-        particles = [],
-        particleAnimId = null;
+  .resources{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:6px 0 8px;}
+  .resources li{margin-bottom:10px;color:var(--ink);}
+  .resources strong{color:var(--ink);}
 
-      function initParticles(canvasId) {
-        particleCanvas = document.getElementById(canvasId);
-        if (!particleCanvas) return;
-        particleCtx = particleCanvas.getContext("2d");
-        resizeParticleCanvas();
-        window.addEventListener("resize", resizeParticleCanvas);
-        particles = [];
-        animateParticles();
-      }
+  .done-wrap{text-align:center;padding-top:80px;}
+  @media (max-width:560px){.card-grid.cols-2{grid-template-columns:1fr;}h1{font-size:25px;}}
 
-      function resizeParticleCanvas() {
-        if (!particleCanvas) return;
-        const dp = window.devicePixelRatio || 1;
-        const W = window.innerWidth;
-        const H = window.innerHeight;
-        particleCanvas.width = W * dp;
-        particleCanvas.height = H * dp;
-        particleCanvas.style.width = W + "px";
-        particleCanvas.style.height = H + "px";
-        particleCtx.setTransform(dp, 0, 0, dp, 0, 0);
-      }
+  /* === PARTICLE CANVAS SCREENS === */
+  .canvas-screen{position:fixed;inset:0;padding:0;background:#000;z-index:200;display:none;}
+  .canvas-screen.active{display:block;}
+  .canvas-screen canvas{position:absolute;inset:0;z-index:1;}
+  .canvas-tap-area{position:absolute;inset:0;z-index:3;cursor:crosshair;}
+  .canvas-hud{position:absolute;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:24px;}
+  .canvas-hud-top{display:flex;justify-content:space-between;align-items:center;}
+  .canvas-hud-bottom{text-align:center;padding-bottom:8px;}
+  .chills-counter{font-size:11px;font-weight:300;letter-spacing:0.1em;color:rgba(255,255,255,0.7);}
+  .canvas-hint{font-size:13px;font-weight:300;color:rgba(255,255,255,0.3);letter-spacing:0.02em;transition:opacity 1.5s;}
+  .wait-overlay{position:absolute;inset:0;z-index:10;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff;}
+  .wait-progress-bar{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;}
+  .wait-progress-fill{height:100%;background:#ffd86b;border-radius:2px;transition:width 0.8s ease;}
+  .wait-label{font-size:13px;color:rgba(255,255,255,0.5);font-weight:400;}
+</style>
+</head>
+<body>
+<div id="progress"></div>
 
-      function spawnParticles(x, y) {
-        const n = 40 + Math.floor(Math.random() * 20);
-        for (let i = 0; i < n; i++) {
-          const a = Math.random() * Math.PI * 2;
-          const isCore = i < 15;
-          const sp = isCore
-            ? 0.005 + Math.random() * 0.015
-            : 0.08 + Math.random() * 0.3;
-          particles.push({
-            x: x + (Math.random() - 0.5) * (isCore ? 8 : 0.45),
-            y: y + (Math.random() - 0.5) * (isCore ? 8 : 0.45),
-            life: 1,
-            decay: isCore
-              ? 0.00002 + Math.random() * 0.00004
-              : 0.00004 + Math.random() * 0.0001,
-            size: isCore
-              ? 3.5 + Math.random() * 2.5
-              : 2.5 + Math.random() * 3.5,
-            vx: Math.cos(a) * sp,
-            vy: Math.sin(a) * sp - (isCore ? 0.001 : 0.008),
-            l: isCore ? 65 + Math.random() * 15 : 55 + Math.random() * 15,
-            h: 200 + Math.random() * 20,
-            pp: Math.random() * Math.PI * 2,
-            t: 0,
-            isCore,
-          });
-        }
-      }
+<div class="stage">
 
-      function animateParticles() {
-        if (!particleCtx) return;
-        const W = window.innerWidth;
-        const H = window.innerHeight;
-        particleCtx.globalAlpha = 1;
-        particleCtx.fillStyle = "#000";
-        particleCtx.fillRect(0, 0, W, H);
-        for (let i = particles.length - 1; i >= 0; i--) {
-          const p = particles[i];
-          p.t++;
-          p.life -= p.decay;
-          if (p.life <= 0) {
-            particles.splice(i, 1);
-            continue;
-          }
-          const drift = p.isCore ? 0.05 : 0.15 + p.life * 0.85;
-          p.x += p.vx * drift;
-          p.y += p.vy * drift;
-          const pulse = 0.65 + 0.35 * Math.sin(p.t * 0.008 + p.pp);
-          const a = p.life * pulse;
-          const sz = p.size * (1 + Math.random() * 0.3);
-          particleCtx.globalAlpha = a * 0.95;
-          particleCtx.fillStyle =
-            "hsla(" + p.h + ",40%," + p.l + "%," + a + ")";
-          particleCtx.beginPath();
-          particleCtx.arc(p.x, p.y, sz, 0, Math.PI * 2);
-          particleCtx.fill();
-        }
-        if (particles.length > 3000)
-          particles.splice(0, particles.length - 3000);
-        particleAnimId = requestAnimationFrame(animateParticles);
-      }
-
-      function stopParticles() {
-        if (particleAnimId) {
-          cancelAnimationFrame(particleAnimId);
-          particleAnimId = null;
-        }
-        window.removeEventListener("resize", resizeParticleCanvas);
-        particleCanvas = null;
-        particleCtx = null;
-        particles = [];
-      }
-
-      function handleCanvasTap(e) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        spawnParticles(x, y);
-      }
-
-      async function apiPost(path, data = {}) {
-        const r = await fetch(API + path, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        return r.json();
-      }
-      async function apiGet(path) {
-        const r = await fetch(API + path);
-        return r.json();
-      }
-
-      function formatTime(sec) {
-        const m = Math.floor(sec / 60);
-        const s = Math.floor(sec % 60);
-        return m + ":" + String(s).padStart(2, "0");
-      }
-      function progressPct() {
-        const i = SCREENS.indexOf(state.screen);
-        return i < 0 ? 0 : Math.round((i / (SCREENS.length - 1)) * 100);
-      }
-
-      let lastScreen = null;
-
-      function render() {
-        const app = document.getElementById("app");
-        const isDark = [
-          "interstitial-moment",
-          "primer",
-          "interstitial-listen",
-          "stimulus",
-        ].includes(state.screen);
-        const isWarm = ["personal", "interstitial-prepare"].includes(
-          state.screen,
-        );
-        const bg = isDark ? "#0c0c0e" : isWarm ? "#f7f5f0" : "#fafaf8";
-        app.style.backgroundColor = bg;
-        document.body.style.backgroundColor = bg;
-
-        const screenChanged = state.screen !== lastScreen;
-        lastScreen = state.screen;
-
-        let html = "";
-        const showBar = ![
-          "stimulus",
-          "primer",
-          "interstitial-prepare",
-          "interstitial-moment",
-          "interstitial-listen",
-          "interstitial-back",
-        ].includes(state.screen);
-        if (showBar) {
-          html += `<div class="progress-bar"><div class="progress-fill" style="width:${progressPct()}%"></div></div>`;
-          html += `<div class="brand">ReWire</div>`;
-        }
-
-        const s = state.screen;
-        if (s === "consent") html += renderConsent();
-        else if (s === "prolific") html += renderProlific();
-        else if (s === "demographics") html += renderDemographics();
-        else if (s === "cti9") html += renderCTI9();
-        else if (s === "preState") html += renderPreState();
-        else if (s === "schema") html += renderSchema();
-        else if (s === "personal") html += renderPersonal();
-        else if (s.startsWith("interstitial-")) html += renderInterstitial(s);
-        else if (s === "headphones") html += renderHeadphones();
-        else if (s === "primer") html += renderPrimer();
-        else if (s === "stimulus") html += renderStimulus();
-        else if (s === "postOutcome") html += renderPostOutcome();
-        else if (s === "attribution") html += renderAttribution();
-        else if (s === "personalization") html += renderPersonalization();
-        else if (s === "safety") html += renderGenAISafety();
-        else if (s === "diagnostics") html += renderDiagnostics();
-        else if (s === "postState") html += renderPostState();
-        else if (s === "experience") html += renderExperience();
-        else if (s === "safetyClose") html += renderSafetyClose();
-        else if (s === "beta") html += renderBeta();
-        else if (s === "complete") html += renderComplete();
-
-        app.innerHTML = html;
-        if (screenChanged) {
-          const screenEl = app.querySelector(".screen");
-          if (screenEl) screenEl.classList.add("entering");
-          window.scrollTo(0, 0);
-        }
-      }
-
-      function renderConsent() {
-        return `<div class="screen"><div class="screen-scroll">
-    <p class="q-text" style="margin-bottom:4px">Welcome to the ReWire Music & Speech Study</p>
-    <p class="q-instruction">Chills (also called "aesthetic chills" or "frisson") are a physical sensation triggered by music or emotionally moving content. Not everyone experiences them, and that is completely normal.</p>
-    <div class="consent-text">${CONSENT_TEXT}</div>
-    <div class="consent-check" onclick="toggleConsent(event)">
-      <input type="checkbox" id="consent-cb" ${state.consent ? "checked" : ""}/> I have read and agree to the above.
+  <!-- SECTION 0 : INTRO & CONSENT -->
+  <section class="screen active" data-screen="consent">
+    <div style="padding-top:10px;">
+      <h1>Thanks for participating in our study!</h1>
+      <p>This study explores how audio can create powerful emotional responses called emotional chills.</p>
+      <p>Chills (also called "aesthetic chills" or "frisson") are a strong emotional reaction accompanied by a shiver, tingling, or feeling of cold down the spine. They are sometimes but not necessarily accompanied by goosebumps. Not everyone experiences them, and that is completely normal.</p>
+      <p>In this study, you will listen to a short audio piece (~10 minutes) and answer questions about your experience.</p>
+      <p>There are no right or wrong answers. Your responses are anonymous and will only be used for research purposes.</p>
+      <p><strong>Please have headphones ready before you continue.</strong></p>
+      <label class="check-row">
+        <input type="checkbox" id="consentCheck" />
+        <span>By clicking "Next" you confirm you are 18 or older and <a class="inline" id="consentLink" href="/consent" target="_blank" rel="noopener">consent</a> to participate.</span>
+      </label>
     </div>
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.consent ? "" : "disabled"} onclick="goConsent()">I Agree and Continue</button></div></div>`;
-      }
+  </section>
 
-      function renderProlific() {
-        return `<div class="screen"><div class="screen-scroll" style="display:flex;flex-direction:column;justify-content:center;flex:1">
-    <p class="q-text">What is your Prolific ID?</p>
-    <p class="q-instruction">You can find this on your Prolific dashboard.</p>
-    <input type="text" value="${state.prolificId}" placeholder="Enter your Prolific ID" oninput="state.prolificId=this.value;document.getElementById('prolific-btn').disabled=this.value.length<4"/>
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" id="prolific-btn" ${state.prolificId.length > 3 ? "" : "disabled"} onclick="goProlific()">Continue</button></div></div>`;
-      }
+  <!-- PROLIFIC ID -->
+  <section class="screen" data-screen="prolific">
+    <div style="padding-top:40px;">
+      <h1>What is your Prolific ID?</h1>
+      <input type="text" class="text-input" data-key="S0_Q2" placeholder="Enter your Prolific ID" autocomplete="off" />
+    </div>
+  </section>
 
-      function renderDemographics() {
-        const ages = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
-        const genders = ["Female", "Male", "Non-binary", "Prefer not to say"];
-        const ethnicities = [
-          "White or Caucasian",
-          "Black or African American",
-          "Hispanic or Latino",
-          "Asian",
-          "Mixed / Multiracial",
-          "Other / Prefer not to say",
-        ];
-
-        function cardGrid(options, key) {
-          return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px">${options
-            .map((o) => {
-              const sel = state[key] === o ? "selected" : "";
-              const escaped = o.replace(/'/g, "\\'");
-              return `<div class="attr-btn ${sel}" onclick="state['${key}']='${escaped}';render()" style="text-align:center;padding:16px 12px">${o}</div>`;
-            })
-            .join("")}</div>`;
-        }
-
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-instruction" style="color:var(--text-light);font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">About you</p>
-    <p class="q-text" style="margin-bottom:16px">What's your age range?</p>
-    ${cardGrid(ages, "age")}
-    <p class="q-text" style="margin-bottom:16px">How do you identify?</p>
-    ${cardGrid(genders, "gender")}
-    <p class="q-text" style="margin-bottom:16px">What best describes your background?</p>
-    ${cardGrid(ethnicities, "ethnicity")}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" id="demo-btn" ${state.age && state.gender && state.ethnicity ? "" : "disabled"} onclick="goDemographics()">Continue</button></div></div>`;
-      }
-
-      function renderCTI9() {
-        let items = "";
-        CTI9_ITEMS.forEach((item, i) => {
-          const pills = item.labels
-            .map((lbl, j) => {
-              const val = j + 1;
-              const sel = state.cti9[i] === val ? "selected" : "";
-              return `<div class="pill ${sel}" onclick="state.cti9[${i}]=${val};render()">${lbl}</div>`;
-            })
-            .join("");
-          items += `<div class="item-group"><p class="q-instruction" style="color:var(--text);font-size:15px;margin-bottom:10px">${i + 1}. ${item.text}</p><div class="pill-group">${pills}</div></div>`;
-        });
-        const allDone = state.cti9.every((v) => v !== null);
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:12px">
-    <p class="q-text" style="margin-bottom:20px">About your experiences</p>${items}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" ${allDone ? "" : "disabled"} onclick="goCTI9()">Continue</button></div></div>`;
-      }
-
-      function sliderHTML(key, left, right, value) {
-        return `<div class="slider-wrap"><div class="slider-value" id="sv-${key}">${value}</div><input type="range" min="0" max="10" value="${value}" oninput="state.${key}=+this.value;document.getElementById('sv-${key}').textContent=this.value"/><div class="slider-labels"><span>${left}</span><span>${right}</span></div></div>`;
-      }
-
-      function simpleSliderHTML(key, value) {
-        return `<div class="slider-wrap"><div class="slider-value" id="sv-${key}">${value}</div><input type="range" min="0" max="10" value="${value}" oninput="state['${key}']=+this.value;document.getElementById('sv-${key}').textContent=this.value"/><div class="slider-labels"><span>0</span><span>10</span></div></div>`;
-      }
-
-      function ynHTML(key) {
-        return `<div class="yn-group"><div class="yn-btn ${state[key] === "Yes" ? "selected" : ""}" onclick="state['${key}']='Yes';render()">Yes</div><div class="yn-btn ${state[key] === "No" ? "selected" : ""}" onclick="state['${key}']='No';render()">No</div></div>`;
-      }
-
-      function renderPreState() {
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text" style="margin-bottom:24px">How are you feeling right now?</p>
-    ${sliderHTML("preArousal", "Calm", "Excited / Energized", state.preArousal)}
-    ${sliderHTML("preValence", "Sad", "Happy", state.preValence)}
-    ${sliderHTML("preAbsorption", "Distracted", "Absorbed / Present", state.preAbsorption)}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" onclick="goPreState()">Continue</button></div></div>`;
-      }
-
-      function renderSchema() {
-        let html = `<div class="screen"><div class="screen-scroll" style="padding-top:12px">
-    <p class="q-text" style="margin-bottom:8px">Rate how true each statement is for you</p>
-    <p class="q-instruction" style="margin-bottom:20px">1 = Completely untrue of me, 6 = Describes me perfectly</p>`;
-        const domains = [
-          { key: "failure", label: "Achievement" },
-          { key: "defectiveness", label: "Self-Worth" },
-          { key: "dependence", label: "Independence" },
-        ];
-        domains.forEach((d) => {
-          html += `<div class="domain-label">${d.label}</div>`;
-          SCHEMA_ITEMS[d.key].forEach((item, i) => {
-            const pills = SCHEMA_LABELS.map((lbl, j) => {
-              const val = j + 1;
-              const sel = state.schema[d.key][i] === val ? "selected" : "";
-              return `<div class="pill ${sel}" onclick="state.schema['${d.key}'][${i}]=${val};render()" style="font-size:11px;line-height:1.2;padding:8px 2px">${lbl.replace(/\n/g, "<br>")}</div>`;
-            }).join("");
-            html += `<div class="item-group"><p class="q-instruction" style="color:var(--text);font-size:14px;margin-bottom:8px">${item}</p><div class="pill-group">${pills}</div></div>`;
-          });
-        });
-        const allDone = Object.values(state.schema).every((arr) =>
-          arr.every((v) => v !== null),
-        );
-        html += `</div><div class="btn-wrap"><button class="btn-continue" ${allDone ? "" : "disabled"} onclick="goSchema()">Continue</button></div></div>`;
-        return html;
-      }
-
-      function renderPersonal() {
-        const q = PERSONAL_QS[state.personalIndex];
-        const val = state.personal[q.key];
-        return `<div class="screen"><div class="screen-scroll" style="display:flex;flex-direction:column;justify-content:center;flex:1">
-    <p class="q-text large" style="animation:screenIn 0.6s ease forwards">${q.text}</p>
-    <p class="q-instruction">${state.personalIndex + 1} of ${PERSONAL_QS.length}</p>
-    <textarea placeholder="${q.placeholder}" oninput="state.personal['${q.key}']=this.value;document.getElementById('personal-btn').disabled=this.value.length<3">${val}</textarea>
-  </div>
-  <div class="btn-wrap warm-bg"><button class="btn-continue" id="personal-btn" ${val.length > 2 ? "" : "disabled"} onclick="goPersonal()">Continue</button></div></div>`;
-      }
-
-      function renderInterstitial(type) {
-        const texts = {
-          "interstitial-prepare": "Now, a few questions about you.",
-          "interstitial-moment": "Take a moment.",
-          "interstitial-listen": "Listen.",
-          "interstitial-back": "Welcome back.",
-        };
-        const isDark = ["interstitial-moment", "interstitial-listen"].includes(
-          type,
-        );
-        return `<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;${isDark ? "background:#0c0c0e;color:rgba(255,255,255,0.6)" : "background:#fafaf8;"}"><div class="interstitial">${texts[type] || ""}</div></div>`;
-      }
-
-      function renderHeadphones() {
-        return `<div class="screen"><div class="screen-scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:24px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-    <p class="q-text" style="text-align:center">Please put on your headphones</p>
-    <p class="q-instruction" style="text-align:center">For the best experience, use headphones in a quiet space.</p>
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" onclick="goHeadphones()">I'm Ready</button></div></div>`;
-      }
-
-      function renderPrimer() {
-        const pct = state.genProgress || 0;
-        const showWait = state.meditationDone && !state.genDone;
-        return `<div class="canvas-screen">
-    <canvas id="pCanvas"></canvas>
-    <div class="canvas-tap-area" id="med-tap"></div>
-    <div class="canvas-hud">
-      <div class="canvas-hud-top"></div>
-      <div class="canvas-hud-bottom">
-        <span class="canvas-hint">close your eyes and breathe</span>
+  <!-- DEMOGRAPHICS + CLINICAL -->
+  <section class="screen" data-screen="demographics">
+    <h2>About you</h2>
+    <div class="field">
+      <label class="field-label">What's your age range?</label>
+      <div class="card-grid cols-2" data-select="demo_age">
+        <div class="opt" data-value="18-24">18&ndash;24</div>
+        <div class="opt" data-value="25-34">25&ndash;34</div>
+        <div class="opt" data-value="35-44">35&ndash;44</div>
+        <div class="opt" data-value="45-54">45&ndash;54</div>
+        <div class="opt" data-value="55-64">55&ndash;64</div>
+        <div class="opt" data-value="65+">65+</div>
       </div>
     </div>
-    ${showWait ? `<div class="wait-overlay"><div class="wait-label">Preparing your experience...</div><div class="wait-progress-bar"><div class="wait-progress-fill" style="width:${pct}%"></div></div></div>` : ""}
-  </div>`;
-      }
-
-      function renderStimulus() {
-        return `<div class="canvas-screen">
-    <canvas id="pCanvas"></canvas>
-    <div class="canvas-tap-area" id="stim-tap"></div>
-    <div class="canvas-hud">
-      <div class="canvas-hud-top">
-        <span class="chills-counter" id="chills-count">${state.chillsCount > 0 ? state.chillsCount + " chills" : ""}</span>
-        <span></span>
-      </div>
-      <div class="canvas-hud-bottom">
-        <span class="canvas-hint">tap when you feel something</span>
+    <div class="field">
+      <label class="field-label">How do you identify?</label>
+      <div class="card-grid cols-2" data-select="demo_gender">
+        <div class="opt" data-value="female">Female</div>
+        <div class="opt" data-value="male">Male</div>
+        <div class="opt" data-value="nonbinary">Non-binary</div>
+        <div class="opt" data-value="prefer_not">Prefer not to say</div>
       </div>
     </div>
-  </div>`;
-      }
+    <div class="field">
+      <label class="field-label">What best describes your background?</label>
+      <div class="card-grid cols-2" data-select="demo_ethnicity">
+        <div class="opt" data-value="white">White or Caucasian</div>
+        <div class="opt" data-value="black">Black or African American</div>
+        <div class="opt" data-value="hispanic">Hispanic or Latino</div>
+        <div class="opt" data-value="asian">Asian</div>
+        <div class="opt" data-value="mixed">Mixed / Multiracial</div>
+        <div class="opt" data-value="other">Other / Prefer not to say</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Have you ever been diagnosed with depression?</label>
+      <div class="card-grid cols-2" data-select="depression_dx">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Are you currently taking any medication for your mental health?</label>
+      <div class="card-grid cols-2" data-select="medication">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div class="field" id="medFollowup" style="display:none;">
+      <label class="field-label">If yes &mdash; which medication(s)?</label>
+      <input type="text" class="text-input" data-key="medication_text" placeholder="Type here&hellip;" autocomplete="off" />
+    </div>
+  </section>
 
-      function renderPostOutcome() {
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text" style="margin-bottom:20px">About what you experienced</p>
-    <p class="q-instruction" style="color:var(--text)">Did you experience chills while listening?</p>
-    ${ynHTML("postChillsYn")}
-    <p class="q-instruction" style="color:var(--text)">How intense were the chills?</p>
-    <p class="q-instruction">0 = barely noticeable, 10 = very intense</p>
-    ${simpleSliderHTML("postIntensity", state.postIntensity)}
-    <p class="q-instruction" style="color:var(--text)">How many distinct times did you get chills?</p>
-    <input type="number" min="0" max="50" value="${state.postChillsCount}" oninput="state.postChillsCount=+this.value" style="margin-bottom:16px"/>
-    <p class="q-instruction" style="color:var(--text)">Did you get goosebumps (skin raised, hair standing up)?</p>
-    ${ynHTML("postGoosebumpsYn")}
-    <p class="q-instruction" style="color:var(--text)">Did you feel like crying?</p>
-    <p class="q-instruction">0 = no tears, 10 = I cried heavily</p>
-    ${simpleSliderHTML("postTears", state.postTears)}
-    <p class="q-instruction" style="color:var(--text)">Even without chills, did you feel moved or touched?</p>
-    ${ynHTML("postMovedYn")}
+  <!-- SECTION 1 : CTI-9 -->
+  <section class="screen" data-screen="trait">
+    <h2>About your experiences</h2>
+    <div class="section-intro">These questions ask about everyday experiences that vary a lot between people. Pick the answer that feels closest to how often each one happens for you &mdash; there's no ideal response.</div>
+    <div id="traitItems"></div>
+  </section>
+
+  <!-- SCHEMA -->
+  <section class="screen" data-screen="schema">
+    <h2>Rate how true each statement is for you</h2>
+    <div id="schemaItems"></div>
+  </section>
+
+  <!-- SECTION 3 : PERSONAL QUESTIONS -->
+  <section class="screen" data-screen="personal1">
+    <div style="padding-top:30px;">
+      <h1>What's something good and true about you that the people around you don't see?</h1>
+      <p class="q-index">1 of 3 &middot; optional</p>
+      <textarea class="text-input" data-key="S3_Q1" placeholder="Write what comes to mind&hellip;"></textarea>
+    </div>
+  </section>
+  <section class="screen" data-screen="personal2">
+    <div style="padding-top:30px;">
+      <h1>What does the voice in your head say when you're at your lowest?</h1>
+      <p class="q-index">2 of 3 &middot; optional</p>
+      <textarea class="text-input" data-key="S3_Q2" placeholder="Write what it says&hellip;"></textarea>
+    </div>
+  </section>
+  <section class="screen" data-screen="personal3">
+    <div style="padding-top:30px;">
+      <h1>Describe a specific moment, song, or person that recently moved you almost to tears. What was happening?</h1>
+      <p class="q-index">3 of 3 &middot; optional</p>
+      <textarea class="text-input" data-key="S3_Q3" placeholder="Describe it&hellip;"></textarea>
+    </div>
+  </section>
+
+  <!-- PRE STATE -->
+  <section class="screen" data-screen="state_pre">
+    <h2>How are you feeling right now?</h2>
+    <div id="statePreItems"></div>
+  </section>
+
+  <!-- HEADPHONES GATE -->
+  <section class="screen" data-screen="headphones">
+    <div class="center-screen">
+      <svg class="icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 14v-2a9 9 0 0 1 18 0v2"/>
+        <path d="M3 16a2 2 0 0 1 2-2h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2z"/>
+        <path d="M21 16a2 2 0 0 0-2-2h-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1a2 2 0 0 0 2-2z"/>
+      </svg>
+      <h1>Almost ready</h1>
+      <p>You're now about to hear a 10-minute audio track. Please <strong>put on your headphones</strong> and find a quiet space where you won't be disturbed.</p>
+    </div>
+  </section>
+
+  <!-- POST STATE -->
+  <section class="screen" data-screen="state_post">
+    <h2>How are you feeling right now?</h2>
+    <div id="statePostItems"></div>
+  </section>
+
+  <!-- SECTION 6 : OUTCOME -->
+  <section class="screen" data-screen="outcome">
+    <h2>About what you just heard</h2>
+    <div class="field">
+      <label class="field-label">Did you experience chills while listening?</label>
+      <div class="card-grid cols-2" data-select="S6_Q1">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div id="chillsDetail" style="display:none;"></div>
+    <div class="field">
+      <label class="field-label">Did you get goosebumps (skin raised, hair standing up)?</label>
+      <div class="card-grid cols-2" data-select="S6_Q2">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div id="goosebumpsDetail" style="display:none;"></div>
+    <div id="cryingItem"></div>
+  </section>
+
+  <!-- SECTION 7 : ATTRIBUTION -->
+  <section class="screen" data-screen="attribution">
+    <h2>What caused it</h2>
+    <div class="field">
+      <label class="field-label">What mainly caused the chills?</label>
+      <div class="card-grid" data-select="S7_Q1">
+        <div class="opt" data-value="words">Words</div>
+        <div class="opt" data-value="music">Music</div>
+        <div class="opt" data-value="both">Both equally</div>
+        <div class="opt" data-value="other">Something else</div>
+      </div>
+    </div>
+    <div class="field" id="S7_other_wrap" style="display:none;">
+      <label class="field-label">Tell us more.</label>
+      <textarea class="text-input" data-key="S7_Q1_other" data-required="true" placeholder="What was it?" style="min-height:110px;"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Was there a specific moment that triggered the chills? Describe precisely. <span class="opt-tag">(optional)</span></label>
+      <textarea class="text-input" data-key="S7_Q2" placeholder="Describe the moment&hellip;"></textarea>
+    </div>
+  </section>
+
+  <!-- SECTION 8 : PERSONALIZATION CHECK -->
+  <section class="screen" data-screen="personalization">
+    <h2>While you listened</h2>
+    <div class="field">
+      <label class="field-label">Did anything come to mind while listening &mdash; a memory, a person, a moment, a realization? <span class="opt-tag">(optional)</span></label>
+      <textarea class="text-input" data-key="S8_Q2" placeholder="Write what came up&hellip;"></textarea>
+    </div>
+    <div id="aboutYouItem"></div>
+  </section>
+
+  <!-- SECTION 9 : GENAI SAFETY (speech only) -->
+  <section class="screen" data-screen="safety_genai">
+    <h2>A couple of checks</h2>
+    <div class="field">
+      <label class="field-label">Did the words say anything about you that wasn't true?</label>
+      <div class="card-grid cols-2" data-select="S9_Q1">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div class="field" id="S9_Q1b_wrap" style="display:none;">
+      <label class="field-label">What wasn't true?</label>
+      <textarea class="text-input" data-key="S9_Q1b" placeholder="Tell us&hellip;"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Did the speech say anything that felt wrong, upsetting, or that you didn't want to hear?</label>
+      <div class="card-grid cols-2" data-select="S9_Q2">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div class="field" id="S9_Q2b_wrap" style="display:none;">
+      <label class="field-label">What was it?</label>
+      <textarea class="text-input" data-key="S9_Q2b" placeholder="Tell us&hellip;"></textarea>
+    </div>
+  </section>
+
+  <!-- SECTION 10 : DIAGNOSTICS -->
+  <section class="screen" data-screen="diagnostics">
+    <h2>What felt off, if anything?</h2>
+    <div class="card-grid" data-multi="S10_Q1">
+      <div class="opt multi" data-value="too_generic">Too generic</div>
+      <div class="opt multi" data-value="music_no_resonate">Music didn't resonate with me</div>
+      <div class="opt multi" data-value="wrong_headspace">Wasn't in the right headspace</div>
+      <div class="opt multi" data-value="audio_quality">Audio quality or setup</div>
+      <div class="opt multi" data-value="voice_loud">Voice too loud</div>
+      <div class="opt multi" data-exclusive="true" data-value="nothing">Nothing</div>
+      <div class="opt multi" data-other="true" data-value="other">Other</div>
+    </div>
+    <div class="field" id="S10_other_wrap" style="display:none;margin-top:18px;">
+      <textarea class="text-input" data-key="S10_Q1_other" placeholder="Tell us what else felt off&hellip;" style="min-height:110px;"></textarea>
+    </div>
+  </section>
+
+  <!-- SECTION 12 : EXPERIENCE -->
+  <section class="screen" data-screen="experience">
+    <h2>The experience overall</h2>
+    <div class="field">
+      <label class="field-label">Overall, how would you describe this experience?</label>
+      <textarea class="text-input" data-key="S12_Q1" data-required="true" placeholder="Take your time&hellip;"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Anything else about what you felt, or what could have made it more powerful? <span class="opt-tag">(optional)</span></label>
+      <textarea class="text-input" data-key="S12_Q2" placeholder="Optional&hellip;"></textarea>
+    </div>
+  </section>
+
+  <!-- SECTION 13 : SAFETY CLOSE -->
+  <section class="screen" data-screen="safety_close">
+    <h2>Before you go</h2>
+    <div class="field">
+      <label class="field-label">How do you feel right now, after listening?</label>
+      <textarea class="text-input" data-key="S13_Q1" data-required="true" placeholder="Write a few words&hellip;"></textarea>
+    </div>
+  </section>
+
+  <!-- SECTION 14 : BETA -->
+  <section class="screen" data-screen="beta">
+    <h2>One last thing</h2>
+    <div class="field">
+      <label class="field-label">We're launching a product in September. Would you like to join the beta?</label>
+      <div class="card-grid cols-2" data-select="S14_Q1">
+        <div class="opt" data-value="yes">Yes</div>
+        <div class="opt" data-value="no">No</div>
+      </div>
+    </div>
+    <div class="field" id="S14_Q2_wrap" style="display:none;">
+      <label class="field-label">What's the best email to reach you?</label>
+      <input type="email" class="text-input" data-key="S14_Q2" placeholder="you@example.com" autocomplete="email" />
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section class="screen" data-screen="done">
+    <div class="done-wrap">
+      <h1>Thank you</h1>
+      <p>Your responses have been recorded. You may now close this window.</p>
+      <p class="small" id="redirectNote" style="display:none;">Redirecting you back to Prolific&hellip;</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- MEDITATION CANVAS -->
+<div class="canvas-screen" id="meditationScreen">
+  <canvas id="medCanvas"></canvas>
+  <div class="canvas-tap-area" id="med-tap"></div>
+  <div class="canvas-hud">
+    <div class="canvas-hud-top"></div>
+    <div class="canvas-hud-bottom"><span class="canvas-hint">close your eyes and breathe</span></div>
   </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.postChillsYn !== null && state.postGoosebumpsYn !== null && state.postMovedYn !== null ? "" : "disabled"} onclick="goPostOutcome()">Continue</button></div></div>`;
-      }
-
-      function renderAttribution() {
-        const options = [
-          "The words/speech",
-          "Music",
-          "Both equally",
-          "Something else",
-          "No chills",
-        ];
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text">What mainly caused the chills?</p>
-    <p class="q-instruction" style="margin-bottom:16px">If you experienced them</p>
-    <div class="attr-group">${options.map((o) => `<div class="attr-btn ${state.postAttribution === o ? "selected" : ""}" onclick="state.postAttribution='${o}';render()">${o}</div>`).join("")}</div>
-    <p class="q-text" style="font-size:18px;margin-top:16px">Was there a specific moment that triggered it?</p>
-    <p class="q-instruction">Describe it briefly if you can. (Optional)</p>
-    <textarea placeholder="Describe the moment..." oninput="state.postTriggerMoment=this.value">${state.postTriggerMoment}</textarea>
+  <div class="wait-overlay" id="waitOverlay" style="display:none">
+    <div class="wait-label">Preparing your experience...</div>
+    <div class="wait-progress-bar"><div class="wait-progress-fill" id="waitFill" style="width:0%"></div></div>
   </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.postAttribution ? "" : "disabled"} onclick="goAttribution()">Continue</button></div></div>`;
-      }
+</div>
 
-      function renderPersonalization() {
-        const personalPills = WORDS_PERSONAL_LABELS.map((lbl, j) => {
-          const val = j + 1;
-          const sel = state.postWordsPersonal === val ? "selected" : "";
-          return `<div class="pill ${sel}" onclick="state.postWordsPersonal=${val};render()">${lbl}</div>`;
-        }).join("");
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text">Did anything come to mind while you were listening?</p>
-    <p class="q-instruction" style="margin-bottom:16px">A memory, a person, a moment, a realization? (Optional)</p>
-    <textarea placeholder="What came to mind..." oninput="state.postWhatCameToMind=this.value">${state.postWhatCameToMind}</textarea>
-    <p class="q-text" style="font-size:18px;margin-top:24px">Did the words feel like they were about you specifically?</p>
-    <div class="pill-group">${personalPills}</div>
+<!-- STIMULUS CANVAS -->
+<div class="canvas-screen" id="stimulusScreen">
+  <canvas id="stimCanvas"></canvas>
+  <div class="canvas-tap-area" id="stim-tap"></div>
+  <div class="canvas-hud">
+    <div class="canvas-hud-top">
+      <span class="chills-counter" id="chillsCount"></span>
+      <span></span>
+    </div>
+    <div class="canvas-hud-bottom"><span class="canvas-hint">tap when you feel something</span></div>
   </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.postWordsPersonal !== null ? "" : "disabled"} onclick="goPersonalization()">Continue</button></div></div>`;
+</div>
+
+<div class="footer" id="footer">
+  <button class="btn" id="nextBtn">Next</button>
+</div>
+
+<script>
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+var ARM = "music_speech";
+var API = "/api/research";
+var PROLIFIC_COMPLETION_URL = "";  /* set to Prolific completion URL before launch */
+var sessionId = null;
+var meditationUrl = null;
+var audioUrl = null;
+var chillsTimestamps = [];
+var chillsCountVal = 0;
+var genDone = false;
+var genProgress = 0;
+var meditationDone = false;
+
+var state = { responses: {} };
+
+/* consent link */
+document.getElementById("consentCheck").addEventListener("change", function(){ if(typeof refreshNext==="function") refreshNext(); });
+
+/* ============================================================
+   API HELPERS
+   ============================================================ */
+async function apiPost(path, data) {
+  var r = await fetch(API + path, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(data||{}) });
+  return r.json();
+}
+async function apiGet(path) {
+  var r = await fetch(API + path);
+  return r.json();
+}
+
+/* ============================================================
+   SCALE COMPONENT (Felix's exact implementation)
+   ============================================================ */
+function buildScale(cfg){
+  var n = cfg.max - cfg.min + 1;
+  var verbal = !!cfg.labels;
+  var maxLen = 0;
+  for(var k=0;k<n;k++){ var lt = verbal ? cfg.labels[k] : String(cfg.min+k); if(lt.length>maxLen) maxLen=lt.length; }
+  var tall = maxLen > 14;
+
+  var wrap = document.createElement("div"); wrap.className = "scale-item";
+  var q = document.createElement("div"); q.className = "scale-q"; q.textContent = cfg.question; wrap.appendChild(q);
+  var scale = document.createElement("div"); scale.className = "scale"; scale.dataset.name = cfg.name;
+  var tw = document.createElement("div"); tw.className = "scale-track-wrap";
+
+  var labelRow = document.createElement("div"); labelRow.className = "scale-labels";
+  labelRow.style.height = tall ? "54px" : "22px";
+  var labelSpans = [];
+  for(var i=0;i<n;i++){
+    var sp = document.createElement("span");
+    sp.textContent = verbal ? cfg.labels[i] : String(cfg.min+i);
+    var pl = n>1 ? (i/(n-1))*100 : 50;
+    if(i===0){ sp.style.left="0"; sp.style.textAlign="left"; }
+    else if(i===n-1){ sp.style.left="100%"; sp.style.transform="translateX(-100%)"; sp.style.textAlign="right"; }
+    else { sp.style.left=pl+"%"; sp.style.transform="translateX(-50%)"; sp.style.textAlign="center"; }
+    (function(val){ sp.addEventListener("click", function(){ setVal(val); }); })(cfg.min+i);
+    labelRow.appendChild(sp); labelSpans.push(sp);
+  }
+  tw.appendChild(labelRow);
+
+  var track = document.createElement("div"); track.className = "scale-track"; track.tabIndex = 0;
+  track.setAttribute("role","slider"); track.setAttribute("aria-valuemin",cfg.min); track.setAttribute("aria-valuemax",cfg.max);
+  var line = document.createElement("div"); line.className="scale-line";
+  var fill = document.createElement("div"); fill.className="scale-fill";
+  var ticks = document.createElement("div"); ticks.className="ticks";
+  for(var j=0;j<n;j++){ var t=document.createElement("div"); t.className="tick"; ticks.appendChild(t); }
+  var thumb = document.createElement("div"); thumb.className="thumb";
+  track.appendChild(line); track.appendChild(fill); track.appendChild(ticks); track.appendChild(thumb);
+  tw.appendChild(track); scale.appendChild(tw);
+
+  if(!verbal){
+    var an = document.createElement("div"); an.className="anchors";
+    var l=document.createElement("span"); l.textContent=cfg.anchorLeft;
+    var r2=document.createElement("span"); r2.textContent=cfg.anchorRight;
+    an.appendChild(l); an.appendChild(r2); scale.appendChild(an);
+  }
+  wrap.appendChild(scale);
+
+  var current = null;
+  function setVal(v){
+    v = Math.max(cfg.min, Math.min(cfg.max, Math.round(v)));
+    current = v;
+    var idx = v - cfg.min;
+    var pct = n>1 ? (idx/(n-1))*100 : 0;
+    thumb.style.left = pct+"%"; fill.style.width = pct+"%";
+    scale.classList.add("answered");
+    ticks.querySelectorAll(".tick").forEach(function(t2,i2){ t2.classList.toggle("passed", i2<=idx); });
+    labelSpans.forEach(function(s,i3){ s.classList.toggle("sel", i3===idx); });
+    track.setAttribute("aria-valuenow", v);
+    state.responses[cfg.name] = v;
+    if(typeof refreshNext==="function") refreshNext();
+  }
+  function fromClientX(x){
+    var rect = track.getBoundingClientRect();
+    var ratio = Math.max(0, Math.min(1, (x-rect.left)/rect.width));
+    setVal(cfg.min + ratio*(n-1));
+  }
+  var dragging=false;
+  track.addEventListener("pointerdown", function(e){ dragging=true; track.setPointerCapture(e.pointerId); fromClientX(e.clientX); });
+  track.addEventListener("pointermove", function(e){ if(dragging) fromClientX(e.clientX); });
+  track.addEventListener("pointerup", function(){ dragging=false; });
+  track.addEventListener("keydown", function(e){
+    if(e.key==="ArrowRight"||e.key==="ArrowUp"){ setVal((current===null?cfg.min:current)+1); e.preventDefault(); }
+    else if(e.key==="ArrowLeft"||e.key==="ArrowDown"){ setVal((current===null?cfg.min:current)-1); e.preventDefault(); }
+  });
+  wrap.isAnswered = function(){ return current!==null; };
+  wrap.scaleName = cfg.name;
+  return wrap;
+}
+
+/* ============================================================
+   CONTENT DEFINITIONS
+   ============================================================ */
+var VERBAL5 = ["Never","Rarely","Occasionally","Often","Very often"];
+var traitDefs = [
+  {name:"cti_1", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"1. When I read poetry or look at art, I sometimes feel a chill or wave of excitement."},
+  {name:"cti_2", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"2. Sometimes I feel as if my mind could envelop the whole world."},
+  {name:"cti_3", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"3. Sometimes I experience things as if they were doubly real."},
+  {name:"cti_4", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"4. Textures \u2014 wool, sand, wood \u2014 sometimes remind me of colors or music."},
+  {name:"cti_5", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"5. Sometimes I\u2019m so immersed in nature or art that my state of consciousness feels temporarily changed."},
+  {name:"cti_6", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"6. When I listen to powerful music, I sometimes feel as if I\u2019m being lifted into the air."},
+  {name:"cti_7", min:1, max:5, labels:VERBAL5, anchorLeft:"Never", anchorRight:"Very often", question:"7. I\u2019m often delighted by small things \u2014 colors in soap bubbles, the star shape inside a cut apple."},
+  {name:"cti_8", min:1, max:8, anchorLeft:"Never", anchorRight:"Very frequently", question:"8. How often do you feel moved or touched?"},
+  {name:"cti_9", min:1, max:5, anchorLeft:"Very sad", anchorRight:"Very happy", question:"9. Right now, how do you feel?"}
+];
+function stateDefs(prefix){
+  return [
+    {name:prefix+"_Q1", min:0, max:10, anchorLeft:"Calm", anchorRight:"Excited / Energized", question:"Energy"},
+    {name:prefix+"_Q2", min:0, max:10, anchorLeft:"Sad", anchorRight:"Happy", question:"Mood"},
+    {name:prefix+"_Q3", min:0, max:10, anchorLeft:"Distracted", anchorRight:"Very focused", question:"Attention"}
+  ];
+}
+
+var traitScales=[], statePreScales=[], statePostScales=[], schemaScales=[];
+traitDefs.forEach(function(d){ var s=buildScale(d); traitScales.push(s); document.getElementById("traitItems").appendChild(s); });
+stateDefs("S2").forEach(function(d){ var s=buildScale(d); statePreScales.push(s); document.getElementById("statePreItems").appendChild(s); });
+stateDefs("S11").forEach(function(d){ var s=buildScale(d); statePostScales.push(s); document.getElementById("statePostItems").appendChild(s); });
+
+var schemaItems = [
+  "Almost nothing I do at work (or school) is as good as other people can do.",
+  "I\u2019m incompetent when it comes to achievement.",
+  "Most other people are more capable than I am in areas of work and achievement.",
+  "I\u2019m not as talented as most people are at their work.",
+  "I\u2019m not as intelligent as most people when it comes to work (or school).",
+  "No man/woman I desire could love me once he/she saw my defects or flaws.",
+  "No one I desire would want to stay close to me if he/she knew the real me.",
+  "I\u2019m unworthy of the love, attention, and respect of others.",
+  "I feel that I\u2019m not lovable.",
+  "I am too unacceptable in very basic ways to reveal myself to other people.",
+  "I do not feel capable of getting by on my own in everyday life.",
+  "I think of myself as a dependent person, when it comes to everyday functioning.",
+  "I lack common sense.",
+  "My judgment cannot be relied upon in everyday situations.",
+  "I don\u2019t feel confident about my ability to solve everyday problems that come up."
+];
+var SCHEMA6 = ["Completely untrue of me","Mostly untrue of me","Slightly more true than untrue","Moderately true of me","Mostly true of me","Describes me perfectly"];
+schemaItems.forEach(function(text,i){
+  var s=buildScale({name:"schema_"+(i+1), min:1, max:6, labels:SCHEMA6, anchorLeft:"Completely untrue of me", anchorRight:"Describes me perfectly", question:(i+1)+". "+text});
+  schemaScales.push(s); document.getElementById("schemaItems").appendChild(s);
+});
+
+/* outcome detail scales */
+var chillsIntensity = buildScale({name:"S6_Q3", min:0, max:10, anchorLeft:"Barely noticeable", anchorRight:"Very intense", question:"How intense were the chills?"});
+var chillsCountScale = buildScale({name:"S6_Q4", min:1, max:10, anchorLeft:"Once", anchorRight:"10 or more", question:"How many distinct times did you get chills?"});
+document.getElementById("chillsDetail").appendChild(chillsIntensity);
+document.getElementById("chillsDetail").appendChild(chillsCountScale);
+
+var cryingScale = buildScale({name:"S6_Q5", min:0, max:10, anchorLeft:"No tears", anchorRight:"Cried heavily", question:"Did you feel like crying?"});
+document.getElementById("cryingItem").appendChild(cryingScale);
+
+var goosebumpsIntensity = buildScale({name:"S6_Q6", min:0, max:10, anchorLeft:"Barely noticeable", anchorRight:"Very intense", question:"How intense were the goosebumps?"});
+document.getElementById("goosebumpsDetail").appendChild(goosebumpsIntensity);
+
+/* about-you scale (speech arm) */
+var aboutYouScale = buildScale({name:"S8_Q1", min:1, max:5, anchorLeft:"Not at all", anchorRight:"Completely", question:"Did the words feel like they were about you specifically?"});
+document.getElementById("aboutYouItem").appendChild(aboutYouScale);
+
+/* ============================================================
+   SELECTS / MULTI / TEXT HANDLERS
+   ============================================================ */
+document.querySelectorAll("[data-select]").forEach(function(group){
+  var key = group.dataset.select;
+  group.querySelectorAll(".opt").forEach(function(opt){
+    opt.addEventListener("click", function(){
+      group.querySelectorAll(".opt").forEach(function(o){o.classList.remove("selected");});
+      opt.classList.add("selected");
+      state.responses[key] = opt.dataset.value;
+      conditional(key, opt.dataset.value);
+      refreshNext();
+    });
+  });
+});
+
+document.querySelectorAll("[data-multi]").forEach(function(group){
+  var key = group.dataset.multi;
+  state.responses[key] = [];
+  group.querySelectorAll(".opt").forEach(function(opt){
+    opt.addEventListener("click", function(){
+      var val = opt.dataset.value;
+      var exclusive = opt.dataset.exclusive === "true";
+      var arr = state.responses[key];
+      if(exclusive){
+        group.querySelectorAll(".opt").forEach(function(o){o.classList.remove("selected");});
+        opt.classList.add("selected");
+        arr = [val];
+      } else {
+        group.querySelectorAll(".opt[data-exclusive='true']").forEach(function(o){o.classList.remove("selected");});
+        arr = arr.filter(function(v){return v!=="nothing";});
+        if(opt.classList.contains("selected")){ opt.classList.remove("selected"); arr = arr.filter(function(v){return v!==val;}); }
+        else { opt.classList.add("selected"); arr.push(val); }
       }
+      state.responses[key] = arr;
+      if(key==="S10_Q1"){ document.getElementById("S10_other_wrap").style.display = arr.indexOf("other")>=0 ? "block":"none"; }
+      refreshNext();
+    });
+  });
+});
 
-      function renderGenAISafety() {
-        let untrueDetail = "";
-        if (state.postWordsUntrueYn === "Yes")
-          untrueDetail = `<p class="q-instruction">What wasn't true?</p><textarea placeholder="Describe what wasn't true..." oninput="state.postWordsUntrueText=this.value" style="margin-bottom:16px">${state.postWordsUntrueText}</textarea>`;
-        let upsetDetail = "";
-        if (state.postWordsUpsetYn === "Yes")
-          upsetDetail = `<p class="q-instruction">What was it?</p><textarea placeholder="Describe what felt wrong..." oninput="state.postWordsUpsetText=this.value">${state.postWordsUpsetText}</textarea><div class="flag-box">Thank you for sharing. Your feedback helps us improve.</div>`;
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text" style="margin-bottom:20px">About the spoken words</p>
-    <p class="q-instruction" style="color:var(--text)">Did the words say anything about you that wasn't true?</p>
-    ${ynHTML("postWordsUntrueYn")}
-    ${untrueDetail}
-    <p class="q-instruction" style="color:var(--text)">Did the speech say anything that felt wrong, upsetting, or that you didn't want to hear?</p>
-    ${ynHTML("postWordsUpsetYn")}
-    ${upsetDetail}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.postWordsUntrueYn !== null && state.postWordsUpsetYn !== null ? "" : "disabled"} onclick="goSafety()">Continue</button></div></div>`;
-      }
+function conditional(key, value){
+  if(key==="medication"){
+    document.getElementById("medFollowup").style.display = (value==="yes")?"block":"none";
+    if(value!=="yes"){ var m=document.querySelector("[data-key='medication_text']"); if(m) m.value=""; delete state.responses.medication_text; }
+  }
+  if(key==="S6_Q1"){
+    document.getElementById("chillsDetail").style.display = (value==="yes")?"block":"none";
+  }
+  if(key==="S6_Q2"){
+    document.getElementById("goosebumpsDetail").style.display = (value==="yes")?"block":"none";
+  }
+  if(key==="S7_Q1"){
+    var show7 = (value==="other");
+    document.getElementById("S7_other_wrap").style.display = show7 ? "block":"none";
+    if(!show7){ var o=document.querySelector("[data-key='S7_Q1_other']"); if(o) o.value=""; delete state.responses.S7_Q1_other; }
+  }
+  if(key==="S14_Q1") document.getElementById("S14_Q2_wrap").style.display = (value==="yes")?"block":"none";
+  if(key==="S9_Q1") document.getElementById("S9_Q1b_wrap").style.display = (value==="yes")?"block":"none";
+  if(key==="S9_Q2") document.getElementById("S9_Q2b_wrap").style.display = (value==="yes")?"block":"none";
+}
 
-      function renderDiagnostics() {
-        const opts = DIAG_OPTIONS.map((o, idx) => {
-          const sel = state.diagSelected.includes(o) ? "selected" : "";
-          return `<div class="ms-option ${sel}" onclick="toggleDiag(${idx})"><div class="ms-check"></div><span>${o}</span></div>`;
-        }).join("");
-        const showOther = state.diagSelected.includes("Other");
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text">What felt off, if anything?</p>
-    <p class="q-instruction" style="margin-bottom:16px">Choose all that apply</p>
-    ${opts}
-    ${showOther ? `<input type="text" placeholder="Please specify..." value="${state.diagOther}" oninput="state.diagOther=this.value" style="margin-top:8px"/>` : ""}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.diagSelected.length > 0 ? "" : "disabled"} onclick="goDiagnostics()">Continue</button></div></div>`;
-      }
+document.querySelectorAll("[data-key]").forEach(function(el){
+  el.addEventListener("input", function(){
+    state.responses[el.dataset.key] = el.value;
+    if(el.dataset.required==="true" || el.dataset.key==="S0_Q2" || el.dataset.key==="S14_Q2") refreshNext();
+  });
+});
 
-      function renderPostState() {
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text" style="margin-bottom:24px">How are you feeling now?</p>
-    ${sliderHTML("postArousal", "Calm", "Excited / Energized", state.postArousal)}
-    ${sliderHTML("postValence", "Sad", "Happy", state.postValence)}
-    ${sliderHTML("postAbsorption", "Distracted", "Absorbed / Present", state.postAbsorption)}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" onclick="goPostState()">Continue</button></div></div>`;
-      }
+/* ============================================================
+   FLOW
+   ============================================================ */
+var ORDER = ["consent","prolific","demographics","trait","schema",
+             "personal1","personal2","personal3","state_pre","headphones",
+             "state_post","outcome","attribution","personalization","safety_genai",
+             "diagnostics","experience","safety_close","beta","done"];
+var step = 0;
+var screens = {};
+document.querySelectorAll(".screen").forEach(function(s){ screens[s.dataset.screen]=s; });
+var nextBtn = document.getElementById("nextBtn");
+var footer = document.getElementById("footer");
 
-      function renderExperience() {
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text">Overall, how would you describe the experience of listening?</p>
-    <textarea placeholder="Describe your experience..." oninput="state.postExperience=this.value;document.getElementById('exp-btn').disabled=this.value.length<3" style="margin-bottom:20px">${state.postExperience}</textarea>
-    <p class="q-text" style="font-size:18px">Anything else about what you felt, or what could have made it more powerful?</p>
-    <p class="q-instruction">(Optional)</p>
-    <textarea placeholder="Any additional thoughts..." oninput="state.postExperienceMore=this.value">${state.postExperienceMore}</textarea>
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" id="exp-btn" ${state.postExperience.length > 2 ? "" : "disabled"} onclick="goExperience()">Continue</button></div></div>`;
-      }
+function current(){ return ORDER[step]; }
+function txt(k){ return (state.responses[k]||"").trim(); }
+function emailOk(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||""); }
+function scalesAnswered(arr){ for(var i=0;i<arr.length;i++){ if(!arr[i].isAnswered()) return false; } return true; }
 
-      function renderSafetyClose() {
-        let resources = "";
-        if (state.postDistressYn === "Yes")
-          resources = `<div class="support-box"><strong>Support resources</strong>If you are in crisis, contact the <strong>988 Suicide & Crisis Lifeline</strong> (call or text 988). You can also chat at <strong>988lifeline.org</strong>.</div>`;
-        return `<div class="screen"><div class="screen-scroll" style="padding-top:20px">
-    <p class="q-text">How do you feel right now, after listening?</p>
-    <textarea placeholder="How are you feeling..." oninput="state.postFeelingNow=this.value;document.getElementById('sc-btn').disabled=this.value.length<3||state.postDistressYn===null" style="margin-bottom:20px">${state.postFeelingNow}</textarea>
-    <p class="q-text" style="font-size:18px">Did anything bring up distress that's hard to sit with right now?</p>
-    ${ynHTML("postDistressYn")}
-    ${resources}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" id="sc-btn" ${state.postFeelingNow.length > 2 && state.postDistressYn !== null ? "" : "disabled"} onclick="goSafetyClose()">Continue</button></div></div>`;
-      }
+function isValid(){
+  var sc = current();
+  switch(sc){
+    case "consent": return document.getElementById("consentCheck").checked;
+    case "prolific": return txt("S0_Q2").length>0;
+    case "demographics":
+      return !!(state.responses.demo_age && state.responses.demo_gender && state.responses.demo_ethnicity
+             && state.responses.depression_dx && state.responses.medication);
+    case "trait": return scalesAnswered(traitScales);
+    case "schema": return scalesAnswered(schemaScales);
+    case "state_pre": return scalesAnswered(statePreScales);
+    case "personal1": case "personal2": case "personal3": return true;
+    case "headphones": return true;
+    case "outcome":
+      if(!state.responses.S6_Q1 || !state.responses.S6_Q2) return false;
+      if(!cryingScale.isAnswered()) return false;
+      if(state.responses.S6_Q1==="yes" && (!chillsIntensity.isAnswered()||!chillsCountScale.isAnswered())) return false;
+      if(state.responses.S6_Q2==="yes" && !goosebumpsIntensity.isAnswered()) return false;
+      return true;
+    case "attribution":
+      if(!state.responses.S7_Q1) return false;
+      if(state.responses.S7_Q1==="other" && txt("S7_Q1_other").length===0) return false;
+      return true;
+    case "personalization":
+      if(!aboutYouScale.isAnswered()) return false;
+      return true;
+    case "safety_genai":
+      if(!state.responses.S9_Q1 || !state.responses.S9_Q2) return false;
+      if(state.responses.S9_Q1==="yes" && txt("S9_Q1b").length===0) return false;
+      if(state.responses.S9_Q2==="yes" && txt("S9_Q2b").length===0) return false;
+      return true;
+    case "diagnostics": return (state.responses.S10_Q1||[]).length>0;
+    case "state_post": return scalesAnswered(statePostScales);
+    case "experience": return txt("S12_Q1").length>0;
+    case "safety_close": return txt("S13_Q1").length>0;
+    case "beta":
+      if(!state.responses.S14_Q1) return false;
+      if(state.responses.S14_Q1==="yes" && !emailOk(txt("S14_Q2"))) return false;
+      return true;
+    default: return true;
+  }
+}
+function refreshNext(){ nextBtn.disabled = !isValid(); }
 
-      function renderBeta() {
-        const showEmail = state.betaYn === "Yes";
-        return `<div class="screen"><div class="screen-scroll" style="display:flex;flex-direction:column;justify-content:center;flex:1">
-    <p class="q-text">We're launching a product in September.</p>
-    <p class="q-text" style="margin-bottom:20px">Would you like to join the beta?</p>
-    ${ynHTML("betaYn")}
-    ${showEmail ? `<p class="q-instruction">What's the best email to reach you?</p><input type="email" placeholder="your@email.com" value="${state.betaEmail}" oninput="state.betaEmail=this.value"/>` : ""}
-  </div>
-  <div class="btn-wrap"><button class="btn-continue" ${state.betaYn !== null ? "" : "disabled"} onclick="goBeta()">Continue</button></div></div>`;
-      }
+function buttonLabel(){
+  var sc=current();
+  if(sc==="consent") nextBtn.textContent="Next";
+  else if(sc==="headphones") nextBtn.textContent="Begin";
+  else if(sc==="beta") nextBtn.textContent="Finish";
+  else nextBtn.textContent="Continue";
+}
+function updateProgress(){ document.getElementById("progress").style.width = (step/(ORDER.length-1))*100 + "%"; }
 
-      function renderComplete() {
-        return `<div class="screen"><div class="screen-scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center">
-    <p class="q-text" style="font-size:28px;margin-bottom:12px">Thank you.</p>
-    <p class="q-instruction">Your response has been recorded.</p>
-  </div></div>`;
-      }
+function show(idx){
+  step=idx; var sc=current();
+  Object.keys(screens).forEach(function(k){ screens[k].classList.toggle("active", k===sc); });
+  window.scrollTo({top:0,behavior:"instant"});
+  buttonLabel(); refreshNext(); updateProgress();
+  footer.style.display = (sc==="done") ? "none":"flex";
+}
 
-      // ============ NAVIGATION ============
+/* ============================================================
+   BACKEND SUBMISSION PER SCREEN
+   ============================================================ */
+async function submitAndAdvance(){
+  if(!isValid()) return;
+  var sc = current();
 
-      function toggleConsent(e) {
-        e.preventDefault();
-        state.consent = !state.consent;
-        const cb = document.getElementById("consent-cb");
-        if (cb) cb.checked = state.consent;
-        const btn = document.querySelector(".btn-continue");
-        if (btn) btn.disabled = !state.consent;
-      }
+  if(sc === "headphones"){ startMeditation(); return; }
+  if(sc === "beta"){ await finish(); return; }
 
-      function goConsent() {
-        state.screen = "prolific";
-        render();
-      }
+  /* submit data for the current screen */
+  if(sc === "prolific"){
+    var res = await apiPost("/start", { prolific_id: txt("S0_Q2"), arm: ARM });
+    sessionId = res.session_id;
+  }
+  else if(sc === "demographics"){
+    await apiPost("/"+sessionId+"/demographics", {
+      age: state.responses.demo_age,
+      gender: state.responses.demo_gender,
+      ethnicity: state.responses.demo_ethnicity,
+      depression_dx: state.responses.depression_dx || "",
+      medication: state.responses.medication || "",
+      medication_text: state.responses.medication_text || ""
+    });
+  }
+  else if(sc === "trait"){
+    var ctiResponses = [];
+    for(var c=1;c<=9;c++) ctiResponses.push(state.responses["cti_"+c]);
+    await apiPost("/"+sessionId+"/cti9", { responses: ctiResponses });
+  }
+  else if(sc === "schema"){
+    var failure=[],defectiveness=[],dependence=[];
+    for(var si=1;si<=5;si++) failure.push(state.responses["schema_"+si]);
+    for(var si2=6;si2<=10;si2++) defectiveness.push(state.responses["schema_"+si2]);
+    for(var si3=11;si3<=15;si3++) dependence.push(state.responses["schema_"+si3]);
+    await apiPost("/"+sessionId+"/schema", { failure:failure, defectiveness:defectiveness, dependence:dependence });
+  }
+  else if(sc === "personal3"){
+    var pRes = await apiPost("/"+sessionId+"/personal", {
+      q3_unseen: state.responses.S3_Q1 || "",
+      q1_low_voice: state.responses.S3_Q2 || "",
+      q2_chills: state.responses.S3_Q3 || ""
+    });
+    meditationUrl = pRes.meditation_url;
+  }
+  else if(sc === "state_pre"){
+    await apiPost("/"+sessionId+"/pre-state", {
+      arousal: state.responses.S2_Q1,
+      valence: state.responses.S2_Q2,
+      absorption: state.responses.S2_Q3
+    });
+  }
+  else if(sc === "state_post"){
+    await apiPost("/"+sessionId+"/post-state", {
+      arousal: state.responses.S11_Q1,
+      valence: state.responses.S11_Q2,
+      absorption: state.responses.S11_Q3
+    });
+  }
+  else if(sc === "outcome"){
+    await apiPost("/"+sessionId+"/post-outcome", {
+      chills_yn: state.responses.S6_Q1,
+      chills_intensity: state.responses.S6_Q3 || 0,
+      chills_count: state.responses.S6_Q4 || 0,
+      goosebumps_yn: state.responses.S6_Q2,
+      goosebumps_intensity: state.responses.S6_Q6 || 0,
+      tears: state.responses.S6_Q5 || 0
+    });
+  }
+  else if(sc === "attribution"){
+    await apiPost("/"+sessionId+"/attribution", {
+      attribution: state.responses.S7_Q1,
+      attribution_other: state.responses.S7_Q1_other || "",
+      trigger_moment: state.responses.S7_Q2 || ""
+    });
+  }
+  else if(sc === "personalization"){
+    await apiPost("/"+sessionId+"/personalization", {
+      what_came_to_mind: state.responses.S8_Q2 || "",
+      words_personal: state.responses.S8_Q1 || null
+    });
+  }
+  else if(sc === "safety_genai"){
+    await apiPost("/"+sessionId+"/safety", {
+      words_untrue_yn: state.responses.S9_Q1,
+      words_untrue_text: state.responses.S9_Q1b || "",
+      words_upsetting_yn: state.responses.S9_Q2,
+      words_upsetting_text: state.responses.S9_Q2b || ""
+    });
+  }
+  else if(sc === "diagnostics"){
+    await apiPost("/"+sessionId+"/diagnostics", {
+      what_felt_off_json: JSON.stringify(state.responses.S10_Q1 || []),
+      what_felt_off_other: state.responses.S10_Q1_other || ""
+    });
+  }
+  else if(sc === "experience"){
+    await apiPost("/"+sessionId+"/experience", {
+      experience: state.responses.S12_Q1,
+      experience_more: state.responses.S12_Q2 || ""
+    });
+  }
+  else if(sc === "safety_close"){
+    await apiPost("/"+sessionId+"/safety-close", {
+      feeling_now: state.responses.S13_Q1
+    });
+  }
 
-      async function goProlific() {
-        const res = await apiPost("/start", {
-          prolific_id: state.prolificId,
-          arm: ARM,
-        });
-        state.sessionId = res.session_id;
-        state.screen = "demographics";
-        render();
-      }
+  show(step + 1);
+}
 
-      function checkDemo() {
-        const btn = document.getElementById("demo-btn");
-        if (btn) btn.disabled = !(state.age && state.gender && state.ethnicity);
-      }
+async function finish(){
+  await apiPost("/"+sessionId+"/beta", {
+    beta_yn: state.responses.S14_Q1,
+    beta_email: state.responses.S14_Q2 || ""
+  });
+  await apiPost("/"+sessionId+"/complete");
+  show(ORDER.indexOf("done"));
+  if(PROLIFIC_COMPLETION_URL){
+    document.getElementById("redirectNote").style.display="block";
+    setTimeout(function(){ window.location.href=PROLIFIC_COMPLETION_URL; },2500);
+  }
+}
 
-      async function goDemographics() {
-        await apiPost(`/${state.sessionId}/demographics`, {
-          age: state.age,
-          gender: state.gender,
-          ethnicity: state.ethnicity,
-        });
-        state.screen = "cti9";
-        render();
-      }
+nextBtn.addEventListener("click", function(){ submitAndAdvance(); });
 
-      async function goCTI9() {
-        await apiPost(`/${state.sessionId}/cti9`, { responses: state.cti9 });
-        state.screen = "preState";
-        render();
-      }
+/* ============================================================
+   PARTICLE CANVAS
+   ============================================================ */
+var particleCanvas=null, particleCtx=null, particles=[], particleAnimId=null;
 
-      async function goPreState() {
-        await apiPost(`/${state.sessionId}/pre-state`, {
-          arousal: state.preArousal,
-          valence: state.preValence,
-          absorption: state.preAbsorption,
-        });
-        state.screen = "schema";
-        render();
-      }
+function initParticles(canvasId){
+  particleCanvas=document.getElementById(canvasId);
+  if(!particleCanvas) return;
+  particleCtx=particleCanvas.getContext("2d");
+  resizeParticleCanvas();
+  window.addEventListener("resize",resizeParticleCanvas);
+  particles=[];
+  animateParticles();
+}
+function resizeParticleCanvas(){
+  if(!particleCanvas) return;
+  var dp=window.devicePixelRatio||1;
+  var W=window.innerWidth, H=window.innerHeight;
+  particleCanvas.width=W*dp; particleCanvas.height=H*dp;
+  particleCanvas.style.width=W+"px"; particleCanvas.style.height=H+"px";
+  particleCtx.setTransform(dp,0,0,dp,0,0);
+}
+function spawnParticles(x,y){
+  var n=40+Math.floor(Math.random()*20);
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2;
+    var isCore=i<15;
+    var sp=isCore?0.005+Math.random()*0.015:0.08+Math.random()*0.3;
+    particles.push({x:x+(Math.random()-0.5)*(isCore?8:0.45),y:y+(Math.random()-0.5)*(isCore?8:0.45),life:1,decay:isCore?0.00002+Math.random()*0.00004:0.00004+Math.random()*0.0001,size:isCore?3.5+Math.random()*2.5:2.5+Math.random()*3.5,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(isCore?0.001:0.008),l:isCore?65+Math.random()*15:55+Math.random()*15,h:200+Math.random()*20,pp:Math.random()*Math.PI*2,t:0,isCore:isCore});
+  }
+}
+function animateParticles(){
+  if(!particleCtx) return;
+  var W=window.innerWidth,H=window.innerHeight;
+  particleCtx.globalAlpha=1; particleCtx.fillStyle="#000"; particleCtx.fillRect(0,0,W,H);
+  for(var i=particles.length-1;i>=0;i--){
+    var p=particles[i]; p.t++; p.life-=p.decay;
+    if(p.life<=0){particles.splice(i,1);continue;}
+    var drift=p.isCore?0.05:0.15+p.life*0.85;
+    p.x+=p.vx*drift; p.y+=p.vy*drift;
+    var pulse=0.65+0.35*Math.sin(p.t*0.008+p.pp);
+    var al=p.life*pulse;
+    var sz=p.size*(1+Math.random()*0.3);
+    particleCtx.globalAlpha=al*0.95;
+    particleCtx.fillStyle="hsla("+p.h+",40%,"+p.l+"%,"+al+")";
+    particleCtx.beginPath(); particleCtx.arc(p.x,p.y,sz,0,Math.PI*2); particleCtx.fill();
+  }
+  if(particles.length>3000) particles.splice(0,particles.length-3000);
+  particleAnimId=requestAnimationFrame(animateParticles);
+}
+function stopParticles(){
+  if(particleAnimId){cancelAnimationFrame(particleAnimId);particleAnimId=null;}
+  window.removeEventListener("resize",resizeParticleCanvas);
+  particleCanvas=null; particleCtx=null; particles=[];
+}
+function handleCanvasTap(e){
+  var rect=e.currentTarget.getBoundingClientRect();
+  spawnParticles(e.clientX-rect.left, e.clientY-rect.top);
+}
 
-      async function goSchema() {
-        await apiPost(`/${state.sessionId}/schema`, state.schema);
-        state.screen = "interstitial-prepare";
-        render();
-        setTimeout(() => {
-          state.screen = "personal";
-          render();
-        }, 2800);
-      }
+/* ============================================================
+   MEDITATION + STIMULUS (with generation polling)
+   ============================================================ */
+var meditationAudio=null, stimulusAudio=null;
 
-      async function goPersonal() {
-        if (state.personalIndex < PERSONAL_QS.length - 1) {
-          state.personalIndex++;
-          render();
-          return;
-        }
-        const res = await apiPost(
-          `/${state.sessionId}/personal`,
-          state.personal,
-        );
-        state.meditationUrl = res.meditation_url;
-        state.screen = "headphones";
-        render();
-      }
+function startMeditation(){
+  meditationDone = false;
+  footer.style.display="none";
+  document.getElementById("meditationScreen").classList.add("active");
+  initParticles("medCanvas");
+  document.getElementById("med-tap").addEventListener("click",handleCanvasTap);
 
-      function goHeadphones() {
-        state.screen = "interstitial-moment";
-        render();
-        setTimeout(() => {
-          state.screen = "primer";
-          render();
-          startPrimer();
-        }, 2800);
-      }
+  /* start polling for generation completion */
+  pollGeneration();
 
-      function startPrimer() {
-        if (!state.meditationUrl) return;
-        state.meditationDone = false;
-        state.genDone = false;
-        state.genProgress = 0;
-        initParticles("pCanvas");
-        const tapArea = document.getElementById("med-tap");
-        if (tapArea) tapArea.addEventListener("click", handleCanvasTap);
-        primerAudio = new Audio(state.meditationUrl);
-        primerAudio.play();
-        primerAudio.onended = () => {
-          state.meditationDone = true;
-          if (state.genDone) {
-            goPrimer();
-          } else {
-            render();
-            pollForAudio();
-          }
-        };
-      }
+  meditationAudio=new Audio(meditationUrl);
+  meditationAudio.play().catch(function(){});
+  meditationAudio.onended=function(){
+    meditationDone = true;
+    tryTransitionToStimulus();
+  };
+}
 
-      function pollForAudio() {
-        const poll = async () => {
-          const res = await apiGet(`/${state.sessionId}/status`);
-          state.genProgress = res.progress || 0;
-          if (res.stage === "done" && res.audio_url) {
-            state.audioUrl = res.audio_url;
-            state.genDone = true;
-            goPrimer();
-          } else if (res.stage === "error") {
-            alert("An error occurred. Please contact the researcher.");
-          } else {
-            render();
-            setTimeout(poll, 2000);
-          }
-        };
-        poll();
-      }
+function pollGeneration(){
+  var poll = async function(){
+    var res = await apiGet("/"+sessionId+"/status");
+    genProgress = res.progress || 0;
+    document.getElementById("waitFill").style.width = genProgress + "%";
 
-      async function goPrimer() {
-        if (primerAudio) {
-          primerAudio.pause();
-          primerAudio = null;
-        }
-        stopParticles();
+    if(res.stage === "done" && res.audio_url){
+      audioUrl = res.audio_url;
+      genDone = true;
+      tryTransitionToStimulus();
+    } else if(res.stage === "error"){
+      alert("An error occurred. Please contact the researcher.");
+    } else {
+      setTimeout(poll, 2000);
+    }
+  };
+  poll();
+}
 
-        if (!state.audioUrl) {
-          const res = await apiGet(`/${state.sessionId}/status`);
-          if (res.audio_url) state.audioUrl = res.audio_url;
-        }
+function tryTransitionToStimulus(){
+  if(meditationDone && genDone){
+    document.getElementById("waitOverlay").style.display = "none";
+    stopParticles();
+    document.getElementById("meditationScreen").classList.remove("active");
+    startStimulus();
+  } else if(meditationDone && !genDone){
+    /* meditation finished but generation still running - show wait overlay */
+    document.getElementById("waitOverlay").style.display = "flex";
+  }
+}
 
-        state.screen = "interstitial-listen";
-        render();
-        setTimeout(() => {
-          state.screen = "stimulus";
-          render();
-          setTimeout(startStimulus, 300);
-        }, 2800);
-      }
+async function startStimulus(){
+  /* get audio URL from backend */
+  if(!audioUrl){
+    var res = await apiGet("/"+sessionId+"/status");
+    if(res.audio_url) audioUrl = res.audio_url;
+  }
+  if(!audioUrl){ alert("Audio not ready. Please contact the researcher."); return; }
 
-      function startStimulus() {
-        stimulusAudio = new Audio(state.audioUrl);
-        stimulusAudio.play();
-        initParticles("pCanvas");
-        const tapArea = document.getElementById("stim-tap");
-        if (tapArea)
-          tapArea.addEventListener("click", function (e) {
-            handleCanvasTap(e);
-            if (!stimulusAudio) return;
-            const ts = Math.round(stimulusAudio.currentTime * 100) / 100;
-            state.chillsTimestamps.push(ts);
-            state.chillsCount = state.chillsTimestamps.length;
-            const el = document.getElementById("chills-count");
-            if (el) el.textContent = state.chillsCount + " chills";
-          });
-        stimulusAudio.onended = () => {
-          stopParticles();
-          submitChills();
-        };
-      }
+  document.getElementById("stimulusScreen").classList.add("active");
+  initParticles("stimCanvas");
 
-      async function submitChills() {
-        await apiPost(`/${state.sessionId}/chills`, {
-          chills_timestamps_json: JSON.stringify(state.chillsTimestamps),
-          chills_count: state.chillsCount,
-        });
-        state.screen = "interstitial-back";
-        render();
-        setTimeout(() => {
-          state.screen = "postOutcome";
-          render();
-        }, 2800);
-      }
+  var tapArea=document.getElementById("stim-tap");
+  tapArea.addEventListener("click",function(e){
+    handleCanvasTap(e);
+    if(!stimulusAudio) return;
+    var ts=Math.round(stimulusAudio.currentTime*100)/100;
+    chillsTimestamps.push(ts);
+    chillsCountVal=chillsTimestamps.length;
+    var el=document.getElementById("chillsCount");
+    if(el) el.textContent=chillsCountVal+" chills";
+  });
 
-      async function goPostOutcome() {
-        await apiPost(`/${state.sessionId}/post-outcome`, {
-          chills_yn: state.postChillsYn,
-          chills_intensity: state.postIntensity,
-          chills_count: state.postChillsCount,
-          goosebumps_yn: state.postGoosebumpsYn,
-          tears: state.postTears,
-          moved_yn: state.postMovedYn,
-        });
-        state.screen = "attribution";
-        render();
-      }
+  stimulusAudio=new Audio(audioUrl);
+  stimulusAudio.play().catch(function(){});
+  stimulusAudio.onended=function(){
+    stopParticles();
+    document.getElementById("stimulusScreen").classList.remove("active");
+    submitChillsAndContinue();
+  };
+}
 
-      async function goAttribution() {
-        await apiPost(`/${state.sessionId}/attribution`, {
-          attribution: state.postAttribution,
-          trigger_moment: state.postTriggerMoment,
-        });
-        state.screen = "personalization";
-        render();
-      }
+async function submitChillsAndContinue(){
+  await apiPost("/"+sessionId+"/chills",{
+    chills_timestamps_json: JSON.stringify(chillsTimestamps),
+    chills_count: chillsCountVal
+  });
+  footer.style.display="flex";
+  show(ORDER.indexOf("state_post"));
+}
 
-      async function goPersonalization() {
-        await apiPost(`/${state.sessionId}/personalization`, {
-          what_came_to_mind: state.postWhatCameToMind,
-          words_personal: state.postWordsPersonal,
-        });
-        state.screen = "safety";
-        render();
-      }
-
-      async function goSafety() {
-        await apiPost(`/${state.sessionId}/safety`, {
-          words_untrue_yn: state.postWordsUntrueYn,
-          words_untrue_text: state.postWordsUntrueText,
-          words_upsetting_yn: state.postWordsUpsetYn,
-          words_upsetting_text: state.postWordsUpsetText,
-        });
-        state.screen = "diagnostics";
-        render();
-      }
-
-      function toggleDiag(idx) {
-        const opt = DIAG_OPTIONS[idx];
-        const i = state.diagSelected.indexOf(opt);
-        if (i >= 0) state.diagSelected.splice(i, 1);
-        else state.diagSelected.push(opt);
-        render();
-      }
-
-      async function goDiagnostics() {
-        await apiPost(`/${state.sessionId}/diagnostics`, {
-          what_felt_off_json: JSON.stringify(state.diagSelected),
-          what_felt_off_other: state.diagOther,
-        });
-        state.screen = "postState";
-        render();
-      }
-
-      async function goPostState() {
-        await apiPost(`/${state.sessionId}/post-state`, {
-          arousal: state.postArousal,
-          valence: state.postValence,
-          absorption: state.postAbsorption,
-        });
-        state.screen = "experience";
-        render();
-      }
-
-      async function goExperience() {
-        await apiPost(`/${state.sessionId}/experience`, {
-          experience: state.postExperience,
-          experience_more: state.postExperienceMore,
-        });
-        state.screen = "safetyClose";
-        render();
-      }
-
-      async function goSafetyClose() {
-        await apiPost(`/${state.sessionId}/safety-close`, {
-          feeling_now: state.postFeelingNow,
-          distress_yn: state.postDistressYn,
-        });
-        state.screen = "beta";
-        render();
-      }
-
-      async function goBeta() {
-        await apiPost(`/${state.sessionId}/beta`, {
-          beta_yn: state.betaYn,
-          beta_email: state.betaEmail,
-        });
-        await apiPost(`/${state.sessionId}/complete`);
-        state.screen = "complete";
-        render();
-      }
-
-      render();
-    </script>
-  </body>
+/* ============================================================
+   INIT
+   ============================================================ */
+show(0);
+</script>
+</body>
 </html>
