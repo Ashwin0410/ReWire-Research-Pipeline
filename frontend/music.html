@@ -410,6 +410,7 @@
    ============================================================ */
 var ARM = "music_only";
 var API = "/api/research";
+var PROLIFIC_COMPLETION_URL = "";  /* set to Prolific completion URL before launch */
 var sessionId = null;
 var meditationUrl = null;
 var audioUrl = null;
@@ -824,6 +825,10 @@ async function finish(){
   });
   await apiPost("/"+sessionId+"/complete");
   show(ORDER.indexOf("done"));
+  if(PROLIFIC_COMPLETION_URL){
+    document.getElementById("redirectNote").style.display="block";
+    setTimeout(function(){ window.location.href=PROLIFIC_COMPLETION_URL; },2500);
+  }
 }
 
 nextBtn.addEventListener("click", function(){ submitAndAdvance(); });
