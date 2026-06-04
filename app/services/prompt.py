@@ -81,12 +81,9 @@ FORMAT SELECTION -- choose based on the user's answers and psychological context
 - If they're lost/no direction/feeling behind -- THE QUESTION or THE MONOLOGUE
 - If they're grieving/nostalgic/missing something -- THE MEMORY or THE INVENTORY
 - If they're exhausted/heavy/can't move -- THE MONOLOGUE or THE PERMISSION SLIP
-- If their chills trigger was about connection/kindness -- lean toward THE LETTER
-- If their chills trigger was about beauty/nature/art -- lean toward THE INVENTORY or THE MEMORY
+- If their emotional trigger was about connection/kindness -- lean toward THE LETTER
+- If their emotional trigger was about beauty/nature/art -- lean toward THE INVENTORY or THE MEMORY
 - If their hidden truth reveals deep isolation -- THE WITNESS
-- If their "I just want someone to know" reveals hidden pain or exhaustion -- THE WITNESS or THE MONOLOGUE
-- If their "I just want someone to know" reveals a desire to be seen or understood -- THE LETTER (from a stranger) or THE WITNESS
-- If their "I just want someone to know" reveals defiance or determination -- THE MONOLOGUE or THE PERMISSION SLIP
 - If their dominant schema is Failure (inadequacy, not good enough) -- THE PERMISSION SLIP or THE MONOLOGUE
 - If their dominant schema is Defectiveness/Shame (unlovable, flawed) -- THE LETTER or THE WITNESS
 - If their dominant schema is Dependence/Incompetence (can't cope alone) -- THE MONOLOGUE or THE PERMISSION SLIP
@@ -254,7 +251,7 @@ CHILLS TRIGGERS -- use as many as possible:
 - Permission giving ("you don't have to believe it yet")
 - Hyper-specific universal memories (backseat of a car at night as a kid)
 - Being acknowledged without being judged
-- What they want someone to know -- use the emotional weight of that unspoken truth without repeating it
+- The unspoken truth they carry -- use the emotional weight of what they revealed without repeating it
 
 === HONESTY RULES (NON-NEGOTIABLE) ===
 
@@ -313,7 +310,7 @@ WHAT TO AVOID:
 - Making it obvious you read their answers ("you mentioned...", "you said...", "you wrote about...")
 
 PERSONALIZATION:
-Read their answers. Understand the EMOTIONAL LANDSCAPE -- what kind of pain, what kind of longing, what kind of hidden strength. What they want someone to know tells you about their deepest unspoken truth -- use that emotional insight. Their psychological context tells you the shape of their core wound. Then write a speech that speaks to that landscape at a GENERAL level. The listener should feel deeply understood without being able to point to any specific detail you borrowed from their input.
+Read their answers. Understand the EMOTIONAL LANDSCAPE -- what kind of pain, what kind of longing, what kind of hidden strength. Their answers reveal their deepest unspoken truth -- use that emotional insight. Their psychological context tells you the shape of their core wound. Then write a speech that speaks to that landscape at a GENERAL level. The listener should feel deeply understood without being able to point to any specific detail you borrowed from their input.
 
 THE RULE: Understand what they feel. Never repeat what they said. Stay emotionally specific but physically universal. You can be deeply personal without being obvious. The most powerful thing you can do is make someone feel understood without them knowing how you did it.
 
@@ -330,11 +327,10 @@ def build_user_prompt(
     q1_low_voice: str,
     q2_chills: str,
     q3_unseen: str,
-    q4_know: str = "",
     dominant_schema: str = "",
     target_words: int = 550,
 ) -> str:
-    """Build the user prompt from the 4 personal answers + schema. Claude picks the format."""
+    """Build the user prompt from the 3 personal answers + schema. Claude picks the format."""
 
     schema_block = ""
     if dominant_schema and dominant_schema in SCHEMA_DESCRIPTIONS:
@@ -349,14 +345,11 @@ Use this to shape the emotional landscape of the speech. Do NOT mention schemas,
 The voice in their head at their lowest:
 "{q1_low_voice}"
 
-The last time they felt chills or goosebumps:
+A moment, song, or person that recently moved them almost to tears:
 "{q2_chills}"
 
-Something true about them that nobody sees:
+Something good and true about them that the people around them don't see:
 "{q3_unseen}"
-
-What they want someone to know:
-"{q4_know}"
 {schema_block}
 
 TARGET LENGTH: approximately {target_words} words. This is CRITICAL -- the speech will be layered over a music track and must fill it completely. Write approximately {target_words} words. Not significantly more. Not significantly less. The 2 opening statements count toward this total.
