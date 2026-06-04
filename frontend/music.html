@@ -210,22 +210,22 @@
   <section class="screen" data-screen="personal1">
     <div style="padding-top:30px;">
       <h1>What's something good and true about you that the people around you don't see?</h1>
-      <p class="q-index">1 of 3 &middot; optional</p>
-      <textarea class="text-input" data-key="S3_Q1" placeholder="Write what comes to mind&hellip;"></textarea>
+      <p class="q-index">1 of 3</p>
+      <textarea class="text-input" data-key="S3_Q1" data-required="true" placeholder="Write what comes to mind&hellip;"></textarea>
     </div>
   </section>
   <section class="screen" data-screen="personal2">
     <div style="padding-top:30px;">
       <h1>What does the voice in your head say when you're at your lowest?</h1>
-      <p class="q-index">2 of 3 &middot; optional</p>
-      <textarea class="text-input" data-key="S3_Q2" placeholder="Write what it says&hellip;"></textarea>
+      <p class="q-index">2 of 3</p>
+      <textarea class="text-input" data-key="S3_Q2" data-required="true" placeholder="Write what it says&hellip;"></textarea>
     </div>
   </section>
   <section class="screen" data-screen="personal3">
     <div style="padding-top:30px;">
       <h1>Describe a specific moment, song, or person that recently moved you almost to tears. What was happening?</h1>
-      <p class="q-index">3 of 3 &middot; optional</p>
-      <textarea class="text-input" data-key="S3_Q3" placeholder="Describe it&hellip;"></textarea>
+      <p class="q-index">3 of 3</p>
+      <textarea class="text-input" data-key="S3_Q3" data-required="true" placeholder="Describe it&hellip;"></textarea>
     </div>
   </section>
 
@@ -282,10 +282,9 @@
     <div class="field">
       <label class="field-label">What mainly caused the chills?</label>
       <div class="card-grid" data-select="S7_Q1">
-        <div class="opt" data-value="words">Words</div>
         <div class="opt" data-value="music">Music</div>
-        <div class="opt" data-value="both">Both equally</div>
         <div class="opt" data-value="other">Something else</div>
+        <div class="opt" data-value="no_chills">No chills</div>
       </div>
     </div>
     <div class="field" id="S7_other_wrap" style="display:none;">
@@ -311,12 +310,10 @@
   <section class="screen" data-screen="diagnostics">
     <h2>What felt off, if anything?</h2>
     <div class="card-grid" data-multi="S10_Q1">
-      <div class="opt multi" data-value="too_generic">Too generic</div>
       <div class="opt multi" data-value="music_no_resonate">Music didn't resonate with me</div>
       <div class="opt multi" data-value="wrong_headspace">Wasn't in the right headspace</div>
       <div class="opt multi" data-value="audio_quality">Audio quality or setup</div>
-      <div class="opt multi" data-value="voice_loud">Voice too loud</div>
-      <div class="opt multi" data-exclusive="true" data-value="nothing">Nothing</div>
+      <div class="opt multi" data-exclusive="true" data-value="nothing">Nothing felt off</div>
       <div class="opt multi" data-other="true" data-value="other">Other</div>
     </div>
     <div class="field" id="S10_other_wrap" style="display:none;margin-top:18px;">
@@ -677,7 +674,9 @@ function isValid(){
     case "trait": return scalesAnswered(traitScales);
     case "schema": return scalesAnswered(schemaScales);
     case "state_pre": return scalesAnswered(statePreScales);
-    case "personal1": case "personal2": case "personal3": return true;
+    case "personal1": return txt("S3_Q1").length > 0;
+    case "personal2": return txt("S3_Q2").length > 0;
+    case "personal3": return txt("S3_Q3").length > 0;
     case "headphones": return true;
     case "outcome":
       if(!state.responses.S6_Q1 || !state.responses.S6_Q2) return false;
