@@ -66,10 +66,15 @@ def health():
 
 @app.get("/")
 def serve_root():
-    path = FRONTEND_DIR / "index.html"
+    return {"service": "ReWire Research Pipeline", "endpoints": ["/music", "/speech", "/docs"]}
+
+
+@app.get("/consent")
+def serve_consent():
+    path = FRONTEND_DIR / "consent.html"
     if path.exists():
         return FileResponse(str(path), media_type="text/html")
-    return {"service": "ReWire Research Pipeline", "endpoints": ["/music", "/speech", "/docs"]}
+    return {"error": "consent.html not found"}
 
 
 @app.get("/music")
