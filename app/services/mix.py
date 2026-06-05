@@ -448,7 +448,6 @@ def mix(
     music_premix_gain_db: float = -0.5,
     ffmpeg_bin: str | None = None,
     stems_dir: str | Path | None = None,
-    content_duration_ms: int | None = None,
     **_ignored,
 ) -> int:
 
@@ -573,15 +572,8 @@ def mix(
     sw = music.sample_width
     frame_bytes = ch * sw
 
-    if content_duration_ms is not None and content_duration_ms > 0:
-        # Use content duration as the target instead of full music file length.
-        # This ensures the voice is retimed to fit within the actual music content,
-        # not the full file which may include trailing silence.
-        target_ms = content_duration_ms
-        target_samples_per_ch = int(round(content_duration_ms * music.frame_rate / 1000.0))
-    else:
-        target_samples_per_ch = len(music.raw_data) // frame_bytes
-        target_ms = int(round(1000 * target_samples_per_ch / music.frame_rate))
+    target_samples_per_ch = len(music.raw_data) // frame_bytes
+    target_ms = int(round(1000 * target_samples_per_ch / music.frame_rate))
 
     if sync_mode == "retime_voice_to_music":
         tmp_v = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
