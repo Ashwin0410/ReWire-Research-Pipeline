@@ -25,9 +25,9 @@ class Config:
     # Track registry
     # total_duration_sec: full file length (including trailing silence/fade)
     # content_duration_sec: actual music content (before trailing silence/fade)
-    # target_words: SPOKEN word count for speech generation (~108 wpm measured
-    #   ElevenLabs pace with emotional tags, pauses, and prosody shifts).
-    #   Calculated from content_duration_sec, NOT total_duration_sec.
+    # target_words: SPOKEN word count for speech generation.
+    #   Calibrated per voice to account for ElevenLabs delivery pace and
+    #   Claude's tendency to overshoot by ~30%.
     #   Tags like [whispers], [pause], [sighs] do NOT count toward this number.
     # voice_settings: per-voice ElevenLabs synthesis settings tuned for each voice
     TRACKS = {
@@ -36,7 +36,7 @@ class Config:
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 129,
             "content_duration_sec": 126,
-            "target_words": 227,
+            "target_words": 190,
             "voice_settings": {
                 "stability": 0.35,
                 "similarity_boost": 0.7,
@@ -49,7 +49,7 @@ class Config:
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 264,
             "content_duration_sec": 259,
-            "target_words": 466,
+            "target_words": 400,
             "voice_settings": {
                 "stability": 0.35,
                 "similarity_boost": 0.7,
@@ -62,7 +62,7 @@ class Config:
             "voice_id": "0yXkuUWXDHdmdQJugJLb",
             "total_duration_sec": 353,
             "content_duration_sec": 333,
-            "target_words": 600,
+            "target_words": 590,
             "voice_settings": {
                 "stability": 0.50,
                 "similarity_boost": 0.7,
