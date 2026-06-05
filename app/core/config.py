@@ -32,7 +32,7 @@ class Config:
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 129,
             "content_duration_sec": 126,
-            "target_words": 210,
+            "target_words": 200,
         },
         "suuvi": {
             "file": "ad_infinitum.mpeg",
@@ -46,7 +46,7 @@ class Config:
             "voice_id": "0yXkuUWXDHdmdQJugJLb",
             "total_duration_sec": 353,
             "content_duration_sec": 333,
-            "target_words": 540,
+            "target_words": 620,
         },
     }
 
