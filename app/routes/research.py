@@ -3,6 +3,7 @@ import json
 import time
 import csv
 import io
+import shutil
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -208,6 +209,12 @@ def _run_generate(
         _update_job_db(session_id, stage="mixing", progress=70)
         print(f"[Research] TTS complete for {session_id}")
 
+        # Save raw voice file
+        voice_out_filename = f"{session_id}_voice.wav"
+        voice_out_path = cfg.out_dir_path / voice_out_filename
+        shutil.copy2(voice_wav, str(voice_out_path))
+        encrypt_file(str(voice_out_path))
+
         # Stage 3: Mix voice over music
         out_filename = f"{session_id}.mp3"
         out_path = cfg.out_dir_path / out_filename
@@ -229,6 +236,7 @@ def _run_generate(
         _update_job_db(
             session_id,
             audio_filename=out_filename,
+            voice_filename=voice_out_filename,
             voice_id=voice_id,
             generation_time_seconds=elapsed,
             stage="done",
@@ -394,6 +402,23 @@ def serve_audio(filename: str):
     )
 
 
+@r.get("/voice/{filename}")
+def serve_voice(filename: str):
+    filepath = cfg.out_dir_path / filename
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail="Voice file not found")
+
+    audio_bytes = decrypt_file_to_bytes(str(filepath))
+    return Response(
+        content=audio_bytes,
+        media_type="audio/wav",
+        headers={
+            "Content-Disposition": f"inline; filename={filename}",
+            "Accept-Ranges": "bytes",
+        },
+    )
+
+
 @r.post("/{session_id}/chills", response_model=StatusResponse)
 def submit_chills(session_id: str, req: ChillsRequest, db: Session = Depends(get_db)):
     session = _get_session(session_id, db)
@@ -546,6 +571,7 @@ def export_csv(db: Session = Depends(get_db)):
         "speech_text",
         "voice_id",
         "audio_filename",
+        "voice_filename",
         "generation_time_seconds",
         "chills_timestamps",
         "chills_count",
@@ -613,6 +639,7 @@ def export_csv(db: Session = Depends(get_db)):
             decrypt_field(s.speech_text),
             s.voice_id,
             s.audio_filename,
+            s.voice_filename,
             s.generation_time_seconds,
             s.chills_timestamps_json,
             s.chills_count,
