@@ -181,6 +181,8 @@ def _run_generate(
         voice_id = track_info["voice_id"]
         target_words = track_info["target_words"]
         music_path = track_info["file"]
+        voice_settings = track_info["voice_settings"]
+        content_duration_sec = track_info["content_duration_sec"]
 
         # Stage 1: Generate speech text
         _update_job_db(session_id, stage="generating", progress=20)
@@ -205,7 +207,7 @@ def _run_generate(
 
         # Stage 2: TTS
         _update_job_db(session_id, stage="synthesizing", progress=50)
-        voice_wav = synth(speech_text, voice_id, cfg.ELEVENLABS_API_KEY)
+        voice_wav = synth(speech_text, voice_id, cfg.ELEVENLABS_API_KEY, voice_settings=voice_settings)
         _update_job_db(session_id, stage="mixing", progress=70)
         print(f"[Research] TTS complete for {session_id}")
 
@@ -227,6 +229,7 @@ def _run_generate(
             voice_target_dbfs=-12.5,
             music_target_dbfs=-17.0,
             duck_db=5.0,
+            content_duration_sec=content_duration_sec,
         )
 
         encrypt_file(str(out_path))
