@@ -32,21 +32,21 @@ class Config:
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 129,
             "content_duration_sec": 126,
-            "target_words": 280,
+            "target_words": 210,
         },
         "suuvi": {
             "file": "ad_infinitum.mpeg",
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 264,
             "content_duration_sec": 259,
-            "target_words": 580,
+            "target_words": 430,
         },
         "ww2": {
             "file": "heroes_wwii.mp3",
             "voice_id": "0yXkuUWXDHdmdQJugJLb",
             "total_duration_sec": 353,
             "content_duration_sec": 333,
-            "target_words": 750,
+            "target_words": 540,
         },
     }
 
