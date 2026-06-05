@@ -19,6 +19,15 @@ _PAUSE_SENTINEL = "<<<PAUSE>>>"
 # 4600 is near the upper limit - we can be a bit more conservative.
 DEFAULT_MAX_CHARS = 3200
 
+# Default voice settings -- used when no per-track settings are provided.
+# Matches the original hardcoded values so existing behavior is unchanged.
+_DEFAULT_VOICE_SETTINGS = {
+    "stability": 0.3,
+    "similarity_boost": 0.7,
+    "style": 1.0,
+    "use_speaker_boost": True,
+}
+
 
 def _split_text_into_chunks(text: str, max_chars: int = DEFAULT_MAX_CHARS) -> List[str]:
     """
@@ -63,6 +72,7 @@ def _synth_chunk(
     voice_id: str,
     key: str,
     *,
+    voice_settings: dict = None,
     timeout: int = 120,
     max_retries: int = 3,
     backoff_base: float = 1.5,
@@ -76,6 +86,8 @@ def _synth_chunk(
     - HTTP 5xx
     - HTTP 429 (rate limiting)
     """
+    settings = voice_settings if voice_settings else _DEFAULT_VOICE_SETTINGS
+
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
     headers = {
         "xi-api-key": key,
@@ -86,12 +98,7 @@ def _synth_chunk(
         # [pause]/[breath] are stripped or pre-processed BEFORE this stage.
         "text": text,
         "model_id": "eleven_v3",
-        "voice_settings": {
-            "stability": 0.3,
-            "similarity_boost": 0.7,
-            "style": 1.0,
-            "use_speaker_boost": True,
-        },
+        "voice_settings": settings,
     }
 
     last_exc: Exception | None = None
@@ -179,7 +186,7 @@ def _synth_chunk(
     raise RuntimeError("Unknown TTS error; no exception captured but chunk failed.")
 
 
-def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS) -> str:
+def synth(text: str, voice_id: str, key: str, voice_settings: dict = None, max_chars: int = DEFAULT_MAX_CHARS) -> str:
     """
     Chunk long scripts, synth each chunk, stitch, and return a temp WAV path.
 
@@ -188,6 +195,9 @@ def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS
 
     Additionally, we insert short gaps between synthesized chunks so the flow
     feels less like continuous talking and more like natural phrasing.
+
+    If voice_settings is provided, it will be passed to ElevenLabs for each
+    chunk. Otherwise, _DEFAULT_VOICE_SETTINGS is used.
     """
     raw = (text or "").strip()
     if not raw:
@@ -223,7 +233,7 @@ def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS
                 f"[TTS] Synthesising block {block_idx + 1}/{len(blocks)}, "
                 f"chunk {j + 1}/{len(parts)}, len={len(p)} chars"
             )
-            segs.append(_synth_chunk(p, voice_id, key))
+            segs.append(_synth_chunk(p, voice_id, key, voice_settings=voice_settings))
             # Short gap between chunks inside the same block
             if j < len(parts) - 1:
                 segs.append(
