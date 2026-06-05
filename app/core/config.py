@@ -25,28 +25,50 @@ class Config:
     # Track registry
     # total_duration_sec: full file length
     # content_duration_sec: actual music content (before trailing silence/fade)
-    # target_words: word count for speech generation (~135 wpm at ElevenLabs measured pace)
+    # target_words: word count for speech generation, calibrated to content_duration_sec
+    #               accounting for ~15-20% TTS overhead (pauses, chunk gaps, tag-driven
+    #               delivery slowdowns). Effective WPM with ElevenLabs v3 at these
+    #               voice settings is ~110-120 wpm, not the raw 135 wpm baseline.
+    # voice_settings: per-voice ElevenLabs synthesis parameters
     TRACKS = {
         "hallelujah": {
             "file": "a_thousand_hearts.mpeg",
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 129,
             "content_duration_sec": 126,
-            "target_words": 280,
+            "target_words": 250,
+            "voice_settings": {
+                "stability": 0.30,
+                "similarity_boost": 0.70,
+                "style": 1.0,
+                "use_speaker_boost": True,
+            },
         },
         "suuvi": {
             "file": "ad_infinitum.mpeg",
             "voice_id": "lMILJ9d29MrRXy9BIgcz",
             "total_duration_sec": 264,
             "content_duration_sec": 259,
-            "target_words": 580,
+            "target_words": 500,
+            "voice_settings": {
+                "stability": 0.30,
+                "similarity_boost": 0.70,
+                "style": 1.0,
+                "use_speaker_boost": True,
+            },
         },
         "ww2": {
             "file": "heroes_wwii.mp3",
             "voice_id": "0yXkuUWXDHdmdQJugJLb",
             "total_duration_sec": 353,
             "content_duration_sec": 333,
-            "target_words": 750,
+            "target_words": 630,
+            "voice_settings": {
+                "stability": 0.45,
+                "similarity_boost": 0.70,
+                "style": 0.85,
+                "use_speaker_boost": True,
+            },
         },
     }
 
@@ -64,6 +86,7 @@ class Config:
             "total_duration_sec": track["total_duration_sec"],
             "content_duration_sec": track["content_duration_sec"],
             "target_words": track["target_words"],
+            "voice_settings": track["voice_settings"],
         }
 
     MEDITATION_FILE: str = "christian_meditation.mpeg"
