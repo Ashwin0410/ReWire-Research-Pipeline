@@ -135,13 +135,14 @@ Tags that work well:
 - Combos work great: [frustrated sigh], [happy gasp], [sad whisper], [quiet laugh], [tender sigh], [nervous laugh]
 
 Rules:
-- Use 10-15 tags per speech. Enough to guide the voice, not so many that it overwhelms.
+- Use 8-12 tags per speech. Enough to guide the voice, not so many that it overwhelms.
 - Place them at TURNING POINTS -- the moment the emotion shifts.
-- [pause] and [short pause] between ideas. Let the music breathe.
+- Use [pause] and [short pause] sparingly -- maximum 3 total. Each one adds nearly a full second of real silence to the synthesized audio, which inflates the duration beyond the word count target. Section breaks (---) already create natural breathing room.
 - Vary the opening of the main speech (after the 2 statements). Sometimes start with [whispers], sometimes [thoughtful], sometimes [softly], sometimes no tag at all -- just let the text speak. Don't always bookend with whispers.
 - [sighs] and [exhales sharply] after intense moments. The voice needs to breathe.
 - The CRESCENDO section should use [dramatic tone], [determined], [energetic], [powerful], [shouts], [exhales sharply] -- this is where tags earn their keep.
-- The LANDING should contrast sharply -- [whispers], [softly], [sighs] after all that intensity.
+- The LANDING should step down gradually from the crescendo. Do not jump from [shouts] or [powerful] directly to [whispers]. Move through at least one intermediate tone like [calmly] or [softly] first, then settle into [whispers] or silence. The descent should feel like stairs, not a cliff.
+- TRANSITION RULE: Never place a high-intensity tag ([shouts], [powerful], [dramatic tone]) immediately before a low-intensity tag ([whispers], [softly]) or vice versa. Always include at least one intermediate-intensity line or tag between extremes. The voice needs a bridge between registers or the delivery sounds like two different people.
 - Let the TEXT do most of the work. CAPS, ellipses, punctuation, sentence rhythm -- these drive the performance. Tags accent it.
 - Do NOT put audio tags on the 2 opening statements. Those play in silence. Let the words carry themselves.
 
@@ -299,7 +300,7 @@ WHAT TO AVOID:
 - Pity. Acknowledge them clearly, don't feel sorry for them.
 - Abstract hope. Ground everything in physical, sensory reality.
 - Hard asks. The call to action must be tiny. "Start there."
-- Overusing tags. If you used more than 15, you used too many.
+- Overusing tags. If you used more than 12, you used too many.
 - The word "journey" (product name)
 - Flat crescendos. If your crescendo doesn't feel like it's BUILDING and EXPLODING, rewrite it.
 - Claiming to see, know, feel, or be present with the listener (see HONESTY RULES)
@@ -308,6 +309,7 @@ WHAT TO AVOID:
 - Assumed physical abilities or living situations (standing, walking, running, having a kitchen, having a home)
 - Directly referencing or repeating the specific details they gave you (see SUBTLETY RULES)
 - Making it obvious you read their answers ("you mentioned...", "you said...", "you wrote about...")
+- Abrupt delivery shifts. Never jump from [shouts] or [powerful] directly to [whispers] without at least one intermediate-intensity line between them.
 
 PERSONALIZATION:
 Read their answers. Understand the EMOTIONAL LANDSCAPE -- what kind of pain, what kind of longing, what kind of hidden strength. Their answers reveal their deepest unspoken truth -- use that emotional insight. Their psychological context tells you the shape of their core wound. Then write a speech that speaks to that landscape at a GENERAL level. The listener should feel deeply understood without being able to point to any specific detail you borrowed from their input.
@@ -352,7 +354,7 @@ Something good and true about them that the people around them don't see:
 "{q3_unseen}"
 {schema_block}
 
-TARGET LENGTH: approximately {target_words} words. This is CRITICAL -- the speech will be layered over a music track and must fill it completely. Write approximately {target_words} words. Not significantly more. Not significantly less. The 2 opening statements count toward this total.
+TARGET LENGTH: approximately {target_words} words of spoken text (audio tags like [pause], [whispers], etc. do not count as words, but each [pause] or [short pause] adds nearly a full second of real silence to the synthesized audio). This is CRITICAL -- the speech will be synthesized and layered over a music track of fixed length. Write exactly {target_words} words of text. Not more. Not less. The 2 opening statements count toward this total. Keep [pause] and [short pause] tags to a maximum of 3 total.
 
 Choose the FORMAT that best fits this person's emotional state and answers. Then write the speech.
 
@@ -361,4 +363,6 @@ REMEMBER:
 - Do NOT repeat or directly reference their specific answers. Echo the emotional landscape, not the details.
 - Do NOT claim to know, feel, or have experienced anything. Describe feelings with precision instead.
 - Do NOT reference their schema or psychological context directly. Let it shape the speech invisibly.
-- Stay emotionally specific, physically universal. Make them feel understood without being obvious about it."""
+- Stay emotionally specific, physically universal. Make them feel understood without being obvious about it.
+- Limit [pause] and [short pause] to a maximum of 3 total. Section breaks (---) already provide natural breathing room.
+- Transition gradually between intensity levels in your tag usage. Never jump from [shouts] or [powerful] directly to [whispers] -- step down through [calmly] or [softly] first."""
