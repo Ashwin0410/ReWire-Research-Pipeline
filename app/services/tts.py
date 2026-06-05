@@ -87,9 +87,9 @@ def _synth_chunk(
         "text": text,
         "model_id": "eleven_v3",
         "voice_settings": {
-            "stability": 0.3,
+            "stability": 0.55,
             "similarity_boost": 0.7,
-            "style": 1.0,
+            "style": 0.45,
             "use_speaker_boost": True,
         },
     }
