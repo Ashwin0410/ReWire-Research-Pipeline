@@ -5,6 +5,8 @@ import tempfile
 from typing import List
 
 import requests
+import numpy as np
+import noisereduce as nr
 from pydub import AudioSegment
 from requests.exceptions import ConnectionError, Timeout, RequestException
 
@@ -243,6 +245,23 @@ def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS
     full = segs[0]
     for s in segs[1:]:
         full += s
+
+    # Noise reduction to remove ElevenLabs synthesis artifacts
+    samples = np.array(full.get_array_of_samples(), dtype=np.float32)
+    reduced = nr.reduce_noise(
+        y=samples,
+        sr=full.frame_rate,
+        stationary=True,
+        prop_decrease=0.75,
+    )
+    reduced_int = np.int16(np.clip(reduced, -32768, 32767))
+    full = AudioSegment(
+        data=reduced_int.tobytes(),
+        sample_width=full.sample_width,
+        frame_rate=full.frame_rate,
+        channels=full.channels,
+    )
+    print("[TTS] Noise reduction applied")
 
     outf = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
     outf.close()
