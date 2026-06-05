@@ -2,7 +2,7 @@ import io
 import re
 import time
 import tempfile
-from typing import List
+from typing import List, Dict, Optional
 
 import requests
 import numpy as np
@@ -18,6 +18,14 @@ _PAUSE_SENTINEL = "<<<PAUSE>>>"
 # ElevenLabs sometimes gets unstable with huge chunks.
 # 4600 is near the upper limit - we can be a bit more conservative.
 DEFAULT_MAX_CHARS = 3200
+
+# Default voice settings (used if none provided)
+DEFAULT_VOICE_SETTINGS = {
+    "stability": 0.35,
+    "similarity_boost": 0.7,
+    "style": 0.85,
+    "use_speaker_boost": True,
+}
 
 
 def _split_text_into_chunks(text: str, max_chars: int = DEFAULT_MAX_CHARS) -> List[str]:
@@ -63,6 +71,7 @@ def _synth_chunk(
     voice_id: str,
     key: str,
     *,
+    voice_settings: Optional[Dict] = None,
     timeout: int = 120,
     max_retries: int = 3,
     backoff_base: float = 1.5,
@@ -76,6 +85,8 @@ def _synth_chunk(
     - HTTP 5xx
     - HTTP 429 (rate limiting)
     """
+    settings = voice_settings if voice_settings is not None else DEFAULT_VOICE_SETTINGS
+
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream"
     headers = {
         "xi-api-key": key,
@@ -87,10 +98,10 @@ def _synth_chunk(
         "text": text,
         "model_id": "eleven_v3",
         "voice_settings": {
-            "stability": 0.3,
-            "similarity_boost": 0.7,
-            "style": 1.0,
-            "use_speaker_boost": True,
+            "stability": settings.get("stability", 0.35),
+            "similarity_boost": settings.get("similarity_boost", 0.7),
+            "style": settings.get("style", 0.85),
+            "use_speaker_boost": settings.get("use_speaker_boost", True),
         },
     }
 
@@ -179,7 +190,13 @@ def _synth_chunk(
     raise RuntimeError("Unknown TTS error; no exception captured but chunk failed.")
 
 
-def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS) -> str:
+def synth(
+    text: str,
+    voice_id: str,
+    key: str,
+    max_chars: int = DEFAULT_MAX_CHARS,
+    voice_settings: Optional[Dict] = None,
+) -> str:
     """
     Chunk long scripts, synth each chunk, stitch, and return a temp WAV path.
 
@@ -188,6 +205,10 @@ def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS
 
     Additionally, we insert short gaps between synthesized chunks so the flow
     feels less like continuous talking and more like natural phrasing.
+
+    voice_settings: per-voice ElevenLabs settings dict with keys
+        stability, similarity_boost, style, use_speaker_boost.
+        If None, uses DEFAULT_VOICE_SETTINGS.
     """
     raw = (text or "").strip()
     if not raw:
@@ -223,7 +244,7 @@ def synth(text: str, voice_id: str, key: str, max_chars: int = DEFAULT_MAX_CHARS
                 f"[TTS] Synthesising block {block_idx + 1}/{len(blocks)}, "
                 f"chunk {j + 1}/{len(parts)}, len={len(p)} chars"
             )
-            segs.append(_synth_chunk(p, voice_id, key))
+            segs.append(_synth_chunk(p, voice_id, key, voice_settings=voice_settings))
             # Short gap between chunks inside the same block
             if j < len(parts) - 1:
                 segs.append(
