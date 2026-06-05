@@ -99,7 +99,7 @@ OPENING (next 15%) -- Crack the world open. Vivid, concrete, sensory images. Not
 
 CRESCENDO (next 30%) -- Rise from warmth to intensity to FULL unleashed declaration. Repetition. Parallel structure. This is where chills hit. THIS section should have the most emotional range -- build from determined to passionate to EXPLOSIVE.
 
-LANDING (final 15%) -- Sudden quiet. Pull all the way back. A few short, soft lines. A tiny instruction. "Start there."
+LANDING (final 15%) -- Gradually ease back down. Let the intensity soften over several lines, not all at once. A few short, warm lines. A tiny instruction. "Start there." The transition from crescendo to landing should feel like a wave pulling back from the shore -- natural, not sudden.
 
 Not all formats follow this arc. THE WITNESS stays soft. THE QUESTION builds to one moment. THE MEMORY floats. Adapt.
 
@@ -140,8 +140,9 @@ Rules:
 - [pause] and [short pause] between ideas. Let the music breathe.
 - Vary the opening of the main speech (after the 2 statements). Sometimes start with [whispers], sometimes [thoughtful], sometimes [softly], sometimes no tag at all -- just let the text speak. Don't always bookend with whispers.
 - [sighs] and [exhales sharply] after intense moments. The voice needs to breathe.
-- The CRESCENDO section should use [dramatic tone], [determined], [energetic], [powerful], [shouts], [exhales sharply] -- this is where tags earn their keep.
-- The LANDING should contrast sharply -- [whispers], [softly], [sighs] after all that intensity.
+- The CRESCENDO section should use [dramatic tone], [determined], [energetic], [powerful] -- this is where tags earn their keep. Build intensity gradually through the tags, don't jump straight to the most extreme ones.
+- The LANDING should ease down gently -- [softly], [calmly], [sighs]. Think of it as the intensity slowly fading rather than a hard cut. If the crescendo used [powerful], don't jump straight to [whispers] on the next line. Step down through [calmly] or [earnest] first.
+- TRANSITION SMOOTHLY between emotional registers. Never jump directly from [shouts] to [whispers] or from [powerful] to [softly] without at least one line of transition in between. The voice needs room to shift naturally. Abrupt jumps sound robotic and break immersion.
 - Let the TEXT do most of the work. CAPS, ellipses, punctuation, sentence rhythm -- these drive the performance. Tags accent it.
 - Do NOT put audio tags on the 2 opening statements. Those play in silence. Let the words carry themselves.
 
@@ -308,13 +309,23 @@ WHAT TO AVOID:
 - Assumed physical abilities or living situations (standing, walking, running, having a kitchen, having a home)
 - Directly referencing or repeating the specific details they gave you (see SUBTLETY RULES)
 - Making it obvious you read their answers ("you mentioned...", "you said...", "you wrote about...")
+- Jumping abruptly between extreme emotional registers (e.g. [shouts] directly to [whispers]). Always transition gradually.
 
 PERSONALIZATION:
 Read their answers. Understand the EMOTIONAL LANDSCAPE -- what kind of pain, what kind of longing, what kind of hidden strength. Their answers reveal their deepest unspoken truth -- use that emotional insight. Their psychological context tells you the shape of their core wound. Then write a speech that speaks to that landscape at a GENERAL level. The listener should feel deeply understood without being able to point to any specific detail you borrowed from their input.
 
 THE RULE: Understand what they feel. Never repeat what they said. Stay emotionally specific but physically universal. You can be deeply personal without being obvious. The most powerful thing you can do is make someone feel understood without them knowing how you did it.
 
-OUTPUT: Begin with exactly 2 opening statements (no tags, no format header). Then --- break. Then the main speech with ElevenLabs v3 audio tags. Nothing else. No preamble. No explanation. No markdown. No notes. Just the opening statements, break, and speech. The word count target will be provided -- hit it precisely."""
+=== WORD COUNT RULES (CRITICAL) ===
+
+The word count target provided is for SPOKEN WORDS ONLY. This means:
+- Audio tags like [whispers], [dramatic tone], [pause], [sighs], [exhales sharply] do NOT count toward the word total. They are instructions for the voice, not spoken content.
+- Section breaks (---) do NOT count toward the word total.
+- Only count words that the voice will actually speak out loud.
+- The 2 opening statements DO count toward the total (they are spoken).
+- Hit the spoken word count precisely. The speech will be layered over a music track of a specific length, and overshooting or undershooting by more than 5% will break the experience.
+
+OUTPUT: Begin with exactly 2 opening statements (no tags, no format header). Then --- break. Then the main speech with ElevenLabs v3 audio tags. Nothing else. No preamble. No explanation. No markdown. No notes. Just the opening statements, break, and speech."""
 
 
 def pick_format(exclude: str = None) -> str:
@@ -352,7 +363,12 @@ Something good and true about them that the people around them don't see:
 "{q3_unseen}"
 {schema_block}
 
-TARGET LENGTH: approximately {target_words} words. This is CRITICAL -- the speech will be layered over a music track and must fill it completely. Write approximately {target_words} words. Not significantly more. Not significantly less. The 2 opening statements count toward this total.
+TARGET LENGTH: exactly {target_words} SPOKEN words. This is CRITICAL.
+- This number counts ONLY words the voice speaks out loud.
+- Audio tags ([whispers], [pause], [sighs], etc.) and section breaks (---) do NOT count.
+- The speech will be layered over a music track of a specific length. If you write too many or too few spoken words, the speech will not fit the music.
+- The 2 opening statements count toward this total.
+- Aim for exactly {target_words} spoken words. Not more. Not less.
 
 Choose the FORMAT that best fits this person's emotional state and answers. Then write the speech.
 
@@ -361,4 +377,5 @@ REMEMBER:
 - Do NOT repeat or directly reference their specific answers. Echo the emotional landscape, not the details.
 - Do NOT claim to know, feel, or have experienced anything. Describe feelings with precision instead.
 - Do NOT reference their schema or psychological context directly. Let it shape the speech invisibly.
-- Stay emotionally specific, physically universal. Make them feel understood without being obvious about it."""
+- Stay emotionally specific, physically universal. Make them feel understood without being obvious about it.
+- Transition smoothly between emotional registers. Never jump from intense to quiet without a bridge."""
