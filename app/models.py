@@ -50,6 +50,7 @@ class ResearchSession(Base):
     speech_format = Column(String(30))
     voice_id = Column(String(50))
     audio_filename = Column(String(200))
+    voice_filename = Column(String(200))
     generation_time_seconds = Column(Float)
     stage = Column(String(40), nullable=False, default="consent")
     progress = Column(Integer, nullable=False, default=0)
