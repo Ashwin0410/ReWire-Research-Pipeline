@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 import numpy as np
 import pyloudnorm as pyln
@@ -448,6 +448,7 @@ def mix(
     music_premix_gain_db: float = -0.5,
     ffmpeg_bin: str | None = None,
     stems_dir: str | Path | None = None,
+    content_duration_sec: Optional[float] = None,
     **_ignored,
 ) -> int:
 
@@ -495,6 +496,18 @@ def mix(
 
     music = _apply_reverb(music, wet_boost_db=8.0)
     music = _normalize_lufs(music, -15.0)
+
+    # Trim music to content duration (removes trailing silence/fade)
+    # This ensures the final output length matches the actual music content,
+    # not the full file length. The voice will be retimed to fit this duration.
+    if content_duration_sec is not None:
+        content_ms = int(content_duration_sec * 1000)
+        if len(music) > content_ms:
+            print(
+                f"[Mix] Trimming music from {len(music)}ms to content duration "
+                f"{content_ms}ms ({content_duration_sec}s)"
+            )
+            music = music[:content_ms]
 
     if stems_dir is not None:
         Path(stems_dir).mkdir(parents=True, exist_ok=True)
