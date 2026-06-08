@@ -66,10 +66,6 @@ class PersonalRequest(BaseModel):
     q3_unseen: str = ""
     q4_know: str = ""
 
-class ChillsRequest(BaseModel):
-    chills_timestamps_json: str = "[]"
-    chills_count: int = 0
-
 class PostOutcomeRequest(BaseModel):
     chills_yn: str
     chills_intensity: float = 0
@@ -422,15 +418,6 @@ def serve_voice(filename: str):
     )
 
 
-@r.post("/{session_id}/chills", response_model=StatusResponse)
-def submit_chills(session_id: str, req: ChillsRequest, db: Session = Depends(get_db)):
-    session = _get_session(session_id, db)
-    session.chills_timestamps_json = req.chills_timestamps_json
-    session.chills_count = req.chills_count
-    db.commit()
-    return StatusResponse(status="ok")
-
-
 @r.post("/{session_id}/post-outcome", response_model=StatusResponse)
 def submit_post_outcome(session_id: str, req: PostOutcomeRequest, db: Session = Depends(get_db)):
     session = _get_session(session_id, db)
@@ -576,8 +563,6 @@ def export_csv(db: Session = Depends(get_db)):
         "audio_filename",
         "voice_filename",
         "generation_time_seconds",
-        "chills_timestamps",
-        "chills_count",
         "post_chills_yn",
         "post_chills_intensity",
         "post_chills_count",
@@ -644,8 +629,6 @@ def export_csv(db: Session = Depends(get_db)):
             s.audio_filename,
             s.voice_filename,
             s.generation_time_seconds,
-            s.chills_timestamps_json,
-            s.chills_count,
             s.post_chills_yn,
             s.post_chills_intensity,
             s.post_chills_count,
