@@ -90,6 +90,10 @@ class ResearchSession(Base):
     post_valence = Column(Float)
     post_absorption = Column(Float)
 
+    # Engagement (post-stimulus, 0-10 sliders)
+    post_liking = Column(Float)
+    post_listen_again = Column(Float)
+
     # Experience (Section 12)
     post_experience = Column(Text)
     post_experience_more = Column(Text)
