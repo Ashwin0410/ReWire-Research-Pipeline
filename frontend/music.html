@@ -247,6 +247,12 @@
     <div id="statePostItems"></div>
   </section>
 
+  <!-- ENGAGEMENT -->
+  <section class="screen" data-screen="engagement">
+    <h2>About the experience</h2>
+    <div id="engagementItems"></div>
+  </section>
+
   <!-- SECTION 6 : OUTCOME -->
   <section class="screen" data-screen="outcome">
     <h2>About what you just heard</h2>
@@ -554,6 +560,13 @@ document.getElementById("cryingItem").appendChild(cryingScale);
 var goosebumpsIntensity = buildScale({name:"S6_Q6", min:0, max:10, anchorLeft:"Barely noticeable", anchorRight:"Very intense", question:"How intense were the goosebumps?"});
 document.getElementById("goosebumpsDetail").appendChild(goosebumpsIntensity);
 
+var engagementScales = [];
+var engagementDefs = [
+  {name:"ENG_Q1", min:0, max:10, anchorLeft:"Not at all", anchorRight:"Loved it", question:"How much did you like this experience?"},
+  {name:"ENG_Q2", min:0, max:10, anchorLeft:"Definitely not", anchorRight:"Definitely yes", question:"If available, how likely would you be to listen to this audio again?"}
+];
+engagementDefs.forEach(function(d){ var s=buildScale(d); engagementScales.push(s); document.getElementById("engagementItems").appendChild(s); });
+
 /* ============================================================
    SELECTS / MULTI / TEXT HANDLERS
    ============================================================ */
@@ -626,7 +639,7 @@ document.querySelectorAll("[data-key]").forEach(function(el){
    ============================================================ */
 var ORDER = ["consent","prolific","demographics","trait","schema",
              "personal1","personal2","personal3","state_pre","headphones",
-             "state_post","outcome","attribution","personalization",
+             "state_post","engagement","outcome","attribution","personalization",
              "diagnostics","experience","safety_close","beta","done"];
 var step = 0;
 var screens = {};
@@ -667,6 +680,7 @@ function isValid(){
     case "personalization": return true;
     case "diagnostics": return (state.responses.S10_Q1||[]).length>0;
     case "state_post": return scalesAnswered(statePostScales);
+    case "engagement": return scalesAnswered(engagementScales);
     case "experience": return txt("S12_Q1").length>0;
     case "safety_close": return txt("S13_Q1").length>0;
     case "beta":
@@ -752,6 +766,12 @@ async function submitAndAdvance(){
       arousal: state.responses.S11_Q1,
       valence: state.responses.S11_Q2,
       absorption: state.responses.S11_Q3
+    });
+  }
+  else if(sc === "engagement"){
+    await apiPost("/"+sessionId+"/engagement", {
+      liking: state.responses.ENG_Q1,
+      listen_again: state.responses.ENG_Q2
     });
   }
   else if(sc === "outcome"){
