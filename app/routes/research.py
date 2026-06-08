@@ -99,6 +99,10 @@ class PostStateRequest(BaseModel):
     valence: float
     absorption: float
 
+class EngagementRequest(BaseModel):
+    liking: float
+    listen_again: float
+
 class ExperienceRequest(BaseModel):
     experience: str
     experience_more: str = ""
@@ -483,6 +487,15 @@ def submit_post_state(session_id: str, req: PostStateRequest, db: Session = Depe
     return StatusResponse(status="ok")
 
 
+@r.post("/{session_id}/engagement", response_model=StatusResponse)
+def submit_engagement(session_id: str, req: EngagementRequest, db: Session = Depends(get_db)):
+    session = _get_session(session_id, db)
+    session.post_liking = req.liking
+    session.post_listen_again = req.listen_again
+    db.commit()
+    return StatusResponse(status="ok")
+
+
 @r.post("/{session_id}/experience", response_model=StatusResponse)
 def submit_experience(session_id: str, req: ExperienceRequest, db: Session = Depends(get_db)):
     session = _get_session(session_id, db)
@@ -585,6 +598,8 @@ def export_csv(db: Session = Depends(get_db)):
         "post_arousal",
         "post_valence",
         "post_absorption",
+        "post_liking",
+        "post_listen_again",
         "post_experience",
         "post_experience_more",
         "post_feeling_now",
@@ -651,6 +666,8 @@ def export_csv(db: Session = Depends(get_db)):
             s.post_arousal,
             s.post_valence,
             s.post_absorption,
+            s.post_liking,
+            s.post_listen_again,
             decrypt_field(s.post_experience),
             decrypt_field(s.post_experience_more),
             decrypt_field(s.post_feeling_now),
