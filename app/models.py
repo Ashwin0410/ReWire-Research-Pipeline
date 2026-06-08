@@ -56,10 +56,6 @@ class ResearchSession(Base):
     progress = Column(Integer, nullable=False, default=0)
     gen_error = Column(Text)
 
-    # Chills timestamp data
-    chills_timestamps_json = Column(Text)
-    chills_count = Column(Integer, default=0)
-
     # Post-outcome (Section 6)
     post_chills_yn = Column(String(5))
     post_chills_intensity = Column(Float)
