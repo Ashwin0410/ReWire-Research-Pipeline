@@ -94,16 +94,9 @@
   .done-wrap{text-align:center;padding-top:80px;}
   @media (max-width:560px){.card-grid.cols-2{grid-template-columns:1fr;}h1{font-size:25px;}}
 
-  /* === PARTICLE CANVAS SCREENS === */
+  /* === BLACK SCREENS (meditation + stimulus) === */
   .canvas-screen{position:fixed;inset:0;padding:0;background:#000;z-index:200;display:none;}
   .canvas-screen.active{display:block;}
-  .canvas-screen canvas{position:absolute;inset:0;z-index:1;}
-  .canvas-tap-area{position:absolute;inset:0;z-index:3;cursor:crosshair;}
-  .canvas-hud{position:absolute;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:24px;}
-  .canvas-hud-top{display:flex;justify-content:space-between;align-items:center;}
-  .canvas-hud-bottom{text-align:center;padding-bottom:8px;}
-  .chills-counter{font-size:11px;font-weight:300;letter-spacing:0.1em;color:rgba(255,255,255,0.7);}
-  .canvas-hint{font-size:13px;font-weight:300;color:rgba(255,255,255,0.3);letter-spacing:0.02em;transition:opacity 1.5s;}
   .wait-overlay{position:absolute;inset:0;z-index:10;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff;}
   .wait-progress-bar{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;}
   .wait-progress-fill{height:100%;background:#ffd86b;border-radius:2px;transition:width 0.8s ease;}
@@ -370,31 +363,16 @@
 
 </div>
 
-<!-- MEDITATION CANVAS -->
+<!-- MEDITATION SCREEN -->
 <div class="canvas-screen" id="meditationScreen">
-  <canvas id="medCanvas"></canvas>
-  <div class="canvas-tap-area" id="med-tap"></div>
-  <div class="canvas-hud">
-    <div class="canvas-hud-top"></div>
-    <div class="canvas-hud-bottom"><span class="canvas-hint">close your eyes and breathe</span></div>
-  </div>
   <div class="wait-overlay" id="waitOverlay" style="display:none">
     <div class="wait-label">Preparing your experience...</div>
     <div class="wait-progress-bar"><div class="wait-progress-fill" id="waitFill" style="width:0%"></div></div>
   </div>
 </div>
 
-<!-- STIMULUS CANVAS -->
+<!-- STIMULUS SCREEN -->
 <div class="canvas-screen" id="stimulusScreen">
-  <canvas id="stimCanvas"></canvas>
-  <div class="canvas-tap-area" id="stim-tap"></div>
-  <div class="canvas-hud">
-    <div class="canvas-hud-top">
-      <span class="chills-counter" id="chillsCount"></span>
-      <span></span>
-    </div>
-    <div class="canvas-hud-bottom"><span class="canvas-hint">tap when you feel something</span></div>
-  </div>
 </div>
 
 <div class="footer" id="footer">
@@ -411,8 +389,6 @@ var PROLIFIC_COMPLETION_URL = "";  /* set to Prolific completion URL before laun
 var sessionId = null;
 var meditationUrl = null;
 var audioUrl = null;
-var chillsTimestamps = [];
-var chillsCountVal = 0;
 
 var state = { responses: {} };
 
@@ -837,66 +813,6 @@ async function finish(){
 nextBtn.addEventListener("click", function(){ submitAndAdvance(); });
 
 /* ============================================================
-   PARTICLE CANVAS
-   ============================================================ */
-var particleCanvas=null, particleCtx=null, particles=[], particleAnimId=null;
-
-function initParticles(canvasId){
-  particleCanvas=document.getElementById(canvasId);
-  if(!particleCanvas) return;
-  particleCtx=particleCanvas.getContext("2d");
-  resizeParticleCanvas();
-  window.addEventListener("resize",resizeParticleCanvas);
-  particles=[];
-  animateParticles();
-}
-function resizeParticleCanvas(){
-  if(!particleCanvas) return;
-  var dp=window.devicePixelRatio||1;
-  var W=window.innerWidth, H=window.innerHeight;
-  particleCanvas.width=W*dp; particleCanvas.height=H*dp;
-  particleCanvas.style.width=W+"px"; particleCanvas.style.height=H+"px";
-  particleCtx.setTransform(dp,0,0,dp,0,0);
-}
-function spawnParticles(x,y){
-  var n=40+Math.floor(Math.random()*20);
-  for(var i=0;i<n;i++){
-    var a=Math.random()*Math.PI*2;
-    var isCore=i<15;
-    var sp=isCore?0.005+Math.random()*0.015:0.08+Math.random()*0.3;
-    particles.push({x:x+(Math.random()-0.5)*(isCore?8:0.45),y:y+(Math.random()-0.5)*(isCore?8:0.45),life:1,decay:isCore?0.00002+Math.random()*0.00004:0.00004+Math.random()*0.0001,size:isCore?3.5+Math.random()*2.5:2.5+Math.random()*3.5,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(isCore?0.001:0.008),l:isCore?65+Math.random()*15:55+Math.random()*15,h:200+Math.random()*20,pp:Math.random()*Math.PI*2,t:0,isCore:isCore});
-  }
-}
-function animateParticles(){
-  if(!particleCtx) return;
-  var W=window.innerWidth,H=window.innerHeight;
-  particleCtx.globalAlpha=1; particleCtx.fillStyle="#000"; particleCtx.fillRect(0,0,W,H);
-  for(var i=particles.length-1;i>=0;i--){
-    var p=particles[i]; p.t++; p.life-=p.decay;
-    if(p.life<=0){particles.splice(i,1);continue;}
-    var drift=p.isCore?0.05:0.15+p.life*0.85;
-    p.x+=p.vx*drift; p.y+=p.vy*drift;
-    var pulse=0.65+0.35*Math.sin(p.t*0.008+p.pp);
-    var al=p.life*pulse;
-    var sz=p.size*(1+Math.random()*0.3);
-    particleCtx.globalAlpha=al*0.95;
-    particleCtx.fillStyle="hsla("+p.h+",40%,"+p.l+"%,"+al+")";
-    particleCtx.beginPath(); particleCtx.arc(p.x,p.y,sz,0,Math.PI*2); particleCtx.fill();
-  }
-  if(particles.length>3000) particles.splice(0,particles.length-3000);
-  particleAnimId=requestAnimationFrame(animateParticles);
-}
-function stopParticles(){
-  if(particleAnimId){cancelAnimationFrame(particleAnimId);particleAnimId=null;}
-  window.removeEventListener("resize",resizeParticleCanvas);
-  particleCanvas=null; particleCtx=null; particles=[];
-}
-function handleCanvasTap(e){
-  var rect=e.currentTarget.getBoundingClientRect();
-  spawnParticles(e.clientX-rect.left, e.clientY-rect.top);
-}
-
-/* ============================================================
    MEDITATION + STIMULUS
    ============================================================ */
 var meditationAudio=null, stimulusAudio=null;
@@ -904,13 +820,10 @@ var meditationAudio=null, stimulusAudio=null;
 function startMeditation(){
   footer.style.display="none";
   document.getElementById("meditationScreen").classList.add("active");
-  initParticles("medCanvas");
-  document.getElementById("med-tap").addEventListener("click",handleCanvasTap);
 
   meditationAudio=new Audio(meditationUrl);
   meditationAudio.play().catch(function(){});
   meditationAudio.onended=function(){
-    stopParticles();
     startStimulus();
   };
 }
@@ -925,32 +838,15 @@ async function startStimulus(){
 
   document.getElementById("meditationScreen").classList.remove("active");
   document.getElementById("stimulusScreen").classList.add("active");
-  initParticles("stimCanvas");
-
-  var tapArea=document.getElementById("stim-tap");
-  tapArea.addEventListener("click",function(e){
-    handleCanvasTap(e);
-    if(!stimulusAudio) return;
-    var ts=Math.round(stimulusAudio.currentTime*100)/100;
-    chillsTimestamps.push(ts);
-    chillsCountVal=chillsTimestamps.length;
-    var el=document.getElementById("chillsCount");
-    if(el) el.textContent=chillsCountVal+" chills";
-  });
 
   stimulusAudio=new Audio(audioUrl);
   stimulusAudio.play().catch(function(){});
   stimulusAudio.onended=function(){
-    stopParticles();
-    submitChillsAndContinue();
+    endStimulusAndContinue();
   };
 }
 
-async function submitChillsAndContinue(){
-  await apiPost("/"+sessionId+"/chills",{
-    chills_timestamps_json: JSON.stringify(chillsTimestamps),
-    chills_count: chillsCountVal
-  });
+function endStimulusAndContinue(){
   document.getElementById("stimulusScreen").classList.remove("active");
   footer.style.display="flex";
   show(ORDER.indexOf("state_post"));
